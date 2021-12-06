@@ -2,7 +2,7 @@
 set nocompatible              
 filetype off                  
 " set the runtime path to include Vundle and initialize
-set rtp+=~/.config/nvim/bundle/Vundle.vim
+set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()            " required
 Plugin 'VundleVim/Vundle.vim'  " required
 
