@@ -42,7 +42,9 @@ filetype plugin indent on    " required
 :inoremap <S-Tab> <C-V><Tab>
 :set hlsearch
 :set tags+=tags;$HOME
-:map <F2> :TlistToggle <CR>
+:map <F2> :NERDTreeToggle %<CR>
+:map <F3> :e. <CR>
+:cabbr <expr> %% expand('%:p:h')
 :map <F4> :e. <CR>
 :map <F5> :execute "noautocmd vimgrep /" . expand("<cword>") . "/j **" <BAR> cw <CR> 
 :nnoremap <F8> :set invpaste paste?<CR>
@@ -73,6 +75,7 @@ nnoremap ,zim : -1read $HOME/.vim/.skeleton.zim<CR>
 set listchars=tab:>~,nbsp:_,trail:.
 autocmd FileType netrw setl bufhidden=delete
 au BufNewFile,BufRead,BufReadPost *.sv set syntax=verilog
+let NERDTreeShowHidden=1
 
 inoremap {<CR> {<CR>}<ESC>O
 inoremap {;<CR> {<CR>};<ESC>O

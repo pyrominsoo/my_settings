@@ -2,7 +2,7 @@
 set nocompatible              
 filetype off                  
 " set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
+set rtp+=~/.config/nvim/bundle/Vundle.vim
 call vundle#begin()            " required
 Plugin 'VundleVim/Vundle.vim'  " required
 
@@ -29,7 +29,10 @@ filetype plugin indent on       " required
 :set smartindent
 :inoremap <S-Tab> <C-V><Tab>
 :set hlsearch
-:map <F4> :e. <CR>
+:map <F2> :NERDTreeToggle %<CR>
+:map <F3> :e. <CR>
+:cabbr <expr> %% expand('%:p:h')
+:map <F4> :e %%/ <CR>
 :map <F5> :execute "noautocmd vimgrep /" . expand("<cword>") . "/j **" <BAR> cw <CR> 
 :nnoremap <F8> :set invpaste paste?<CR>
 :set pastetoggle=<F8>
@@ -57,7 +60,7 @@ nnoremap ,zim : -1read $HOME/.vim/.skeleton.zim<CR>
 set listchars=tab:>~,nbsp:_,trail:.
 autocmd FileType netrw setl bufhidden=delete
 au BufNewFile,BufRead,BufReadPost *.sv set syntax=verilog
+let NERDTreeShowHidden=1
 
 inoremap {<CR> {<CR>}<ESC>O
 inoremap {;<CR> {<CR>};<ESC>O
-
