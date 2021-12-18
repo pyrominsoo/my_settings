@@ -1,0 +1,12 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =4
+let g:netrw_dirhist_4='/home/mkim'
+let g:netrw_dirhist_3='/home/mkim/Desktop'
+let g:netrw_dirhist_2='/home/mkim/Dropbox/practice/chess/src'
+let g:netrw_dirhist_1='/home/mkim/chess'
+let g:netrw_dirhist_0='/home/mkim'
+let g:netrw_dirhist_9='/home/mkim/chess'
+let g:netrw_dirhist_8='/home/mkim'
+let g:netrw_dirhist_7='/home/mkim/Dropbox/practice/chess/src'
+let g:netrw_dirhist_6='/home/mkim/Dropbox/practice/chess'
+let g:netrw_dirhist_5='/home/mkim/Dropbox/practice/chess/src'

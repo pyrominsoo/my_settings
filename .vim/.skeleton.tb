@@ -1,0 +1,101 @@
+`timescale 1ns / 1ps
+
+module filler_tb();
+
+parameter
+  FILLER = 0;
+
+parameter SIM_TIME = 1000000;
+parameter HALF_CLK_DURATION = 5;
+parameter RESET_DURATION = 18;
+parameter PROBE_SLACK = 0.5;
+
+reg clk;
+reg rstn;
+
+reg filler;
+
+wire finish;
+wire outval;
+
+initial begin
+    clk = 'd0;
+    forever #(HALF_CLK_DURATION) clk = ~clk;
+end 
+
+initial begin
+    rstn = 'd1;
+    #(RESET_DURATION);
+    rstn = 'd0;
+    #(RESET_DURATION);
+    rstn = 'd1;
+end
+
+filler
+#(
+  .FILLER(FILLER)
+)
+filler(
+  .clk(clk),
+  .rstn(rstn),
+
+  .filler(filler),
+  
+  .finish(finish),
+  .outval(outval)
+);
+
+
+
+
+integer tmp;
+integer readfile;
+integer size;
+integer index;
+initial begin
+
+    readfile = $fopen("Testcase/feat_in.txt","r");
+    tmp = $fscanf(readfile,"%d",size);
+
+    @(posedge rstn);
+    @(negedge clk);
+   
+    repeat(10) @(negedge clk);
+
+    for (index = 0; index < size; index = index + 1) begin
+        tmp = $fscanf(readfile,"%d",filler);
+        @(negedge clk);
+    end
+
+    @(posedge finish);
+    filler = 'd0;
+end
+
+integer file1;
+initial begin
+    file1 = $fopen("outval.txt");
+
+    @(posedge rstn);
+    forever begin
+        @(posedge clk);
+        #(PROBE_SLACK);
+        if (finish) begin
+            $fdisplay(file1,"%d",outval);
+        end
+    end
+end
+
+
+initial begin
+	$dumpfile("dumpfile.vcd");
+	$dumpvars(2, filler_tb);
+
+	#(SIM_TIME);
+	$finish;
+end
+
+endmodule
+
+
+
+
