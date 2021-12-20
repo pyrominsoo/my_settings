@@ -45,7 +45,7 @@ filetype plugin indent on    " required
 :map <F2> :NERDTreeToggle %<CR>
 :map <F3> :e. <CR>
 :cabbr <expr> %% expand('%:p:h')
-:map <F4> :e. <CR>
+:map <F4> :e %%/ <CR>
 :map <F5> :execute "noautocmd vimgrep /" . expand("<cword>") . "/j **" <BAR> cw <CR> 
 :nnoremap <F8> :set invpaste paste?<CR>
 :set pastetoggle=<F8>
