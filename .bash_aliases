@@ -1,6 +1,6 @@
 export EDITOR='nvim'
-#export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH
-export PATH=/usr/local/cuda-11.3/bin${PATH:+:${PATH}}:/home/mkim/.local/bin
+export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH
+export PATH=/usr/local/cuda-11.4/bin:/usr/local/cuda-11.3/bin${PATH:+:${PATH}}
 
 alias dfa="df -h /dev/nvme0n1p2 /dev/sda1 /dev/sdb1"
 alias gg="grep -rn"
