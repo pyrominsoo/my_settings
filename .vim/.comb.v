@@ -1,3 +1,0 @@
-always@(*) begin
-
-end
