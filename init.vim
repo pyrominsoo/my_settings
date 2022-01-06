@@ -21,6 +21,7 @@ call vundle#end()               " required
 filetype plugin indent on       " required
 
 
+:colorscheme desert
 :set number
 :set tabstop=4
 :set shiftwidth=4
