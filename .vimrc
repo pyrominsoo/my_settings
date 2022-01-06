@@ -46,7 +46,7 @@ filetype plugin indent on    " required
 :map <F3> :e. <CR>
 :cabbr <expr> %% expand('%:p:h')
 :map <F4> :e %%/ <CR>
-:map <F5> :execute "noautocmd vimgrep /" . expand("<cword>") . "/j **" <BAR> cw <CR> 
+:map <F5> :execute "noautocmd grep! -r " . expand("<cword>") . " **" <BAR> cw <CR> 
 :nnoremap <F6> :cd ..<CR> :pwd<CR>
 :nnoremap <F7> :cd %:p:h<CR> :pwd<CR>
 :nnoremap <F8> :set invpaste paste?<CR>
