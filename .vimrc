@@ -17,6 +17,8 @@ Plugin 'airblade/vim-gitgutter'
 Plugin 'itchyny/lightline.vim'
 Plugin 'preservim/nerdtree'
 Plugin 'Xuyuanp/nerdtree-git-plugin'
+"Plugin 'vhda/verilog_systemverilog.vim'
+
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -76,7 +78,7 @@ nnoremap ,for : -1read $HOME/.vim/.for.v<CR>
 nnoremap ,zim : -1read $HOME/.vim/.skeleton.zim<CR>
 set listchars=tab:>~,nbsp:_,trail:.
 autocmd FileType netrw setl bufhidden=delete
-au BufNewFile,BufRead,BufReadPost *.sv set syntax=verilog
+"au BufNewFile,BufRead,BufReadPost *.sv set syntax=verilog
 let NERDTreeShowHidden=1
 
 inoremap {<CR> {<CR>}<ESC>O
