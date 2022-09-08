@@ -1,0 +1,18 @@
+
+setenv EDITOR 'nvim'
+
+alias gg "grep -rn"
+
+alias rl 'ranger --choosedir=$HOME/.rangerdir; cd `cat $HOME/.rangerdir`'
+
+alias ll 'ls --color -alF'
+alias la 'ls --color -A'
+alias l  'ls --color -CF'
+alias ls 'ls --color -CF'
+
+alias tl "tmux ls"
+alias ta "tmux attach"
+alias tat "tmux attach -t"
+
+alias vi "nvim"
+
