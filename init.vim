@@ -15,6 +15,9 @@ call plug#begin()
 " Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
 Plug 'junegunn/vim-easy-align'
 Plug 'wellle/context.vim'
+Plug 'airblade/vim-gitgutter'
+Plug 'preservim/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
 " Plug 'nvim-treesitter/nvim-treesitter'
 " Plug 'nvim-treesitter/nvim-treesitter-context'
 
@@ -62,10 +65,11 @@ call plug#end()
 :set hlsearch
 " :map <F2> :NERDTreeToggle %<CR>
 :map <F2> :browse oldfiles <CR>
-:map <F3> :e. <CR>
+:map <F3> :NERDTree <CR>
 :cabbr <expr> %% expand('%:p:h')
-:map <F4> :e %%/ <CR>
-:map <F5> :execute "noautocmd grep! -r " . expand("<cword>") . " **" <BAR> cw <CR> 
+":map <F4> :e %%/ <CR>
+:map <F4> :e. <CR>
+:map <F5> :execute "noautocmd grep! -rnI " . expand("<cword>") . " **" <BAR> cw <CR> 
 :nnoremap <F6> :cd ..<CR> :pwd<CR>
 :nnoremap <F7> :cd %:p:h<CR> :pwd<CR>
 :nnoremap <F8> :set invpaste paste?<CR>
@@ -79,6 +83,7 @@ call plug#end()
 :set path+=**
 :set wildmenu
 :command! MakeTags !ctags -R .
+:command! -nargs=1 GG grep! -rnI <f-args> **
 let g:netrw_banner=0
 let g:netrw_browse_split=0
 let g:netrw_altv=1
