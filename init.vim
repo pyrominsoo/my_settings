@@ -18,6 +18,7 @@ Plug 'wellle/context.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'lukas-reineke/indent-blankline.nvim'
 " Plug 'nvim-treesitter/nvim-treesitter'
 " Plug 'nvim-treesitter/nvim-treesitter-context'
 
@@ -54,7 +55,7 @@ call plug#end()
 "   syntax off            " Disable syntax highlighting
 
 
-:colo desert
+":colo desert
 :set number
 :set tabstop=4
 :set shiftwidth=4
@@ -67,8 +68,8 @@ call plug#end()
 :map <F2> :browse oldfiles <CR>
 :map <F3> :NERDTree <CR>
 :cabbr <expr> %% expand('%:p:h')
-":map <F4> :e %%/ <CR>
-:map <F4> :e. <CR>
+:map <F4> :e %%/ <CR>
+":map <F4> :e. <CR>
 :map <F5> :execute "noautocmd grep! -rnI " . expand("<cword>") . " **" <BAR> cw <CR> 
 :nnoremap <F6> :cd ..<CR> :pwd<CR>
 :nnoremap <F7> :cd %:p:h<CR> :pwd<CR>
