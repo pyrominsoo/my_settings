@@ -18,7 +18,7 @@ Plug 'wellle/context.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'lukas-reineke/indent-blankline.nvim'
+
 " Plug 'nvim-treesitter/nvim-treesitter'
 " Plug 'nvim-treesitter/nvim-treesitter-context'
 
@@ -55,7 +55,7 @@ call plug#end()
 "   syntax off            " Disable syntax highlighting
 
 
-":colo desert
+:colo desert
 :set number
 :set tabstop=4
 :set shiftwidth=4
