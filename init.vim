@@ -85,6 +85,7 @@ call plug#end()
 :set wildmenu
 :command! MakeTags !ctags -R .
 :command! -nargs=1 GG grep! -rnI <f-args> **
+:set shortmess+=A
 let g:netrw_banner=0
 let g:netrw_browse_split=0
 let g:netrw_altv=1
@@ -97,14 +98,17 @@ let g:netrw_liststyle=3
 " nnoremap ,fsm : -1read $HOME/.vim/.fsm.v<CR>
 " nnoremap ,for : -1read $HOME/.vim/.for.v<CR>
 " nnoremap ,zim : -1read $HOME/.vim/.skeleton.zim<CR>
-nnoremap ,cls : -1read $HOME/.vim/class.cpp<CR>
+nnoremap ,class : -1read $HOME/.vim/class.cpp<CR>
 nnoremap ,for : -1read $HOME/.vim/for_iter.cpp<CR>
-nnoremap ,foi : -1read $HOME/.vim/for_i.cpp<CR>
-nnoremap ,fnc : -1read $HOME/.vim/func.cpp<CR>
+nnoremap ,fori : -1read $HOME/.vim/for_i.cpp<CR>
+nnoremap ,func : -1read $HOME/.vim/func.cpp<CR>
+nnoremap ,head : -1read $HOME/.vim/head.cpp<CR>
+nnoremap ,right : -1read $HOME/.vim/copyright.cpp<CR>
 set listchars=tab:>~,nbsp:_,trail:.
 autocmd FileType netrw setl bufhidden=delete
 "au BufNewFile,BufRead,BufReadPost *.sv set syntax=verilog
 let NERDTreeShowHidden=1
+
 
 inoremap {<CR> {<CR>}<ESC>O
 inoremap {;<CR> {<CR>};<ESC>O
