@@ -13,7 +13,6 @@ call plug#begin()
 " Make sure you use single quotes
 
 " Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
-Plug 'junegunn/vim-easy-align'
 Plug 'wellle/context.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'preservim/nerdtree'
@@ -29,7 +28,7 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 " Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
 
 " On-demand loading
-" Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+" Plue 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 " Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
 
 " Using a non-default branch
@@ -53,7 +52,6 @@ call plug#end()
 " You can revert the settings after the call like so:
 "   filetype indent off   " Disable file-type-specific indentation
 "   syntax off            " Disable syntax highlighting
-
 
 :colo desert
 :set number
@@ -98,10 +96,7 @@ let g:netrw_liststyle=3
 " nnoremap ,fsm : -1read $HOME/.vim/.fsm.v<CR>
 " nnoremap ,for : -1read $HOME/.vim/.for.v<CR>
 " nnoremap ,zim : -1read $HOME/.vim/.skeleton.zim<CR>
-nnoremap ,class : -1read $HOME/.vim/class.cpp<CR>
 nnoremap ,for : -1read $HOME/.vim/for_iter.cpp<CR>
-nnoremap ,fori : -1read $HOME/.vim/for_i.cpp<CR>
-nnoremap ,func : -1read $HOME/.vim/func.cpp<CR>
 nnoremap ,head : -1read $HOME/.vim/head.cpp<CR>
 nnoremap ,right : -1read $HOME/.vim/copyright.cpp<CR>
 set listchars=tab:>~,nbsp:_,trail:.
@@ -112,3 +107,7 @@ let NERDTreeShowHidden=1
 
 inoremap {<CR> {<CR>}<ESC>O
 inoremap {;<CR> {<CR>};<ESC>O
+
+autocmd VimEnter * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+au BufNew,BufRead * setl fo-=orc
+
