@@ -96,6 +96,7 @@ let g:netrw_liststyle=3
 " nnoremap ,fsm : -1read $HOME/.vim/.fsm.v<CR>
 " nnoremap ,for : -1read $HOME/.vim/.for.v<CR>
 " nnoremap ,zim : -1read $HOME/.vim/.skeleton.zim<CR>
+nnoremap ,class : -1read $HOME/.vim/class.cpp<CR>
 nnoremap ,for : -1read $HOME/.vim/for_iter.cpp<CR>
 nnoremap ,head : -1read $HOME/.vim/head.cpp<CR>
 nnoremap ,right : -1read $HOME/.vim/copyright.cpp<CR>
