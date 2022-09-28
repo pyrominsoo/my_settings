@@ -1,5 +1,5 @@
-set nocompatible              
-filetype off                  
+set nocompatible
+filetype off
 
 call plug#begin()
 " The default plugin directory will be as follows:
@@ -15,6 +15,10 @@ call plug#begin()
 " Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
 Plug 'wellle/context.vim'
 Plug 'airblade/vim-gitgutter'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'tpope/vim-fugitive'
 Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 
@@ -53,64 +57,140 @@ call plug#end()
 "   filetype indent off   " Disable file-type-specific indentation
 "   syntax off            " Disable syntax highlighting
 
+"----------------------------------------------------------------------
+" Basic Options
+"----------------------------------------------------------------------
+let mapleader=" "
 :colo desert
+set hidden                " Allow buffer to go background without being saved
+set list                  " Show invisible characters
+set listchars=tab:>~,nbsp:_,trail:.
+":set showmode (obsolete with vim-airline)
+:set foldmethod=marker
+:set path+=**
+:set wildmenu
+:set shortmess+=A
+
+
+" netrw
+let g:netrw_banner=0
+let g:netrw_browse_split=0
+let g:netrw_altv=1
+let g:netrw_liststyle=3
+autocmd FileType netrw setl bufhidden=delete
+"au BufNewFile,BufRead,BufReadPost *.sv set syntax=verilog
+let NERDTreeShowHidden=1
+
+" Search settings
+:set hlsearch
+set ignorecase  " Ignore casing of searches
+set smartcase           "Be smart about case sensitivity when searching
+
+" Tab settings
 :set tabstop=4
+:set softtabstop=4
 :set shiftwidth=4
 :set expandtab
 :set autoindent
 :set smartindent
 :inoremap <S-Tab> <C-V><Tab>
-:set hlsearch
+
+" Tab completion settings
+set wildmode=list:longest     " Wildcard matches show a list, matching the longest first
+set wildignore+=.git,.hg,.svn " Ignore version control repos
+set wildignore+=*.swp         " Ignore vim backups
+
+" Home path
+let g:vim_home_path = "~/nvim"
+
+" Backup settings
+execute "set directory=" . g:vim_home_path . "/swap"
+execute "set backupdir=" . g:vim_home_path . "/backup"
+execute "set undodir=" . g:vim_home_path . "/undo"
+set backup
+set undofile
+set writebackup
+
+"----------------------------------------------------------------------
+" Key Mappings
+"----------------------------------------------------------------------
+
+" Make navigating around splits easier
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-h> <C-w>h
+nnoremap <C-l> <C-w>l
+if has('nvim')
+  " We have to do this to fix a bug with Neovim on OS X where C-h
+  " is sent as backspace for some reason.
+  nnoremap <BS> <C-W>h
+endif
+
+" Command to write as root if we dont' have permission
+cmap w!! %!sudo tee > /dev/null %
+
+:cabbr <expr> %% expand('%:p:h')
+
+" Grep
+:command! -nargs=1 GG grep! -rnI <f-args> **
+
+" Buffer management
+nnoremap <leader>d   :bd<cr>
+
+" Quitting
+nnoremap <leader>q :q<cr>
+
+" line number
+nnorema <leader>l :set number! relativenumber!<cr>
+
+" CtrlP
+nnoremap <leader>t :CtrlP <cr>
+nnoremap <leader>b :CtrlPBuffer <cr>
+nnoremap <leader>/ :CtrlPLine<cr>
+
+" Tabs
+map <C-t> :tabnew<CR>
+map <C-c> :tabclose<CR>
+map <C-]> :tabnext<CR>
+
 " :map <F2> :NERDTreeToggle %<CR>
 :map <F2> :browse oldfiles <CR>
-:map <F3> :NERDTree <CR>
-:cabbr <expr> %% expand('%:p:h')
+:map <F3> :NERDTreeToggle %<CR>
 :map <F4> :e %%/ <CR>
 ":map <F4> :e. <CR>
-:map <F5> :execute "noautocmd grep! -rnI " . expand("<cword>") . " **" <BAR> cw <CR> 
+:map <F5> :execute "noautocmd grep! -rnI " . expand("<cword>") . " **" <BAR> cw <CR>
 :nnoremap <F6> :cd ..<CR> :pwd<CR>
 :nnoremap <F7> :cd %:p:h<CR> :pwd<CR>
 :nnoremap <F8> :set invpaste paste?<CR>
 :set pastetoggle=<F8>
-:set showmode
 :map <F9> :bd<CR>
-:set foldmethod=marker
-:set nocompatible
-":syntax enable
-":filetype plugin on
-:set path+=**
-:set wildmenu
-:command! MakeTags !ctags -R .
-:command! -nargs=1 GG grep! -rnI <f-args> **
-:set shortmess+=A
-let g:netrw_banner=0
-let g:netrw_browse_split=0
-let g:netrw_altv=1
-let g:netrw_liststyle=3
-" nnoremap ,cpp :-1read $HOME/.vim/.skeleton.cpp<CR>
-" nnoremap ,v :-1read $HOME/.vim/.skeleton.v<CR>
-" nnoremap ,tb :-1read $HOME/.vim/.skeleton.tb<CR>
-" nnoremap ,reg :-1read $HOME/.vim/.reg.v<CR>
-" nnoremap ,comb : -1read $HOME/.vim/.comb.v<CR>
-" nnoremap ,fsm : -1read $HOME/.vim/.fsm.v<CR>
-" nnoremap ,for : -1read $HOME/.vim/.for.v<CR>
-" nnoremap ,zim : -1read $HOME/.vim/.skeleton.zim<CR>
+
+
+" templates
 nnoremap ,class : -1read $HOME/.vim/class.cpp<CR>
 nnoremap ,for : -1read $HOME/.vim/for_iter.cpp<CR>
 nnoremap ,head : -1read $HOME/.vim/head.cpp<CR>
 nnoremap ,right : -1read $HOME/.vim/copyright.cpp<CR>
-set listchars=tab:>~,nbsp:_,trail:.
-autocmd FileType netrw setl bufhidden=delete
-"au BufNewFile,BufRead,BufReadPost *.sv set syntax=verilog
-let NERDTreeShowHidden=1
 
-
+" Braces
 inoremap {<CR> {<CR>}<ESC>O
 inoremap {;<CR> {<CR>};<ESC>O
 
+
+"----------------------------------------------------------------------
+" Autocommands
+"----------------------------------------------------------------------
+" Clear whitespace at the end of lines automatically
+autocmd BufWritePre * :%s/\s\+$//e
+
+" Don't fold anything.
+autocmd BufWinEnter * set foldlevel=999999
+
+" Disable AutoComments
 autocmd VimEnter * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 au BufNew,BufRead * setl fo-=orc
 
+" Automatic toggle with relative line number
 :set number
 :augroup numbertoggle
 :  autocmd!
@@ -118,3 +198,8 @@ au BufNew,BufRead * setl fo-=orc
 :  autocmd BufLeave,FocusLost,InsertEnter,WinLeave   * if &nu                  | set nornu | endif
 :augroup END
 
+"----------------------------------------------------------------------
+" Plugin settings
+"----------------------------------------------------------------------
+" CtrlP
+let g:ctrlp_max_files = 10000
