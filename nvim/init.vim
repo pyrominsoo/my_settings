@@ -54,7 +54,6 @@ call plug#end()
 "   syntax off            " Disable syntax highlighting
 
 :colo desert
-:set number
 :set tabstop=4
 :set shiftwidth=4
 :set expandtab
@@ -111,4 +110,11 @@ inoremap {;<CR> {<CR>};<ESC>O
 
 autocmd VimEnter * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 au BufNew,BufRead * setl fo-=orc
+
+:set number
+:augroup numbertoggle
+:  autocmd!
+:  autocmd BufEnter,FocusGained,InsertLeave,WinEnter * if &nu && mode() != "i" | set rnu   | endif
+:  autocmd BufLeave,FocusLost,InsertEnter,WinLeave   * if &nu                  | set nornu | endif
+:augroup END
 
