@@ -19,8 +19,6 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-fugitive'
-Plug 'preservim/nerdtree'
-Plug 'Xuyuanp/nerdtree-git-plugin'
 
 " Plug 'nvim-treesitter/nvim-treesitter'
 " Plug 'nvim-treesitter/nvim-treesitter-context'
@@ -70,6 +68,8 @@ set listchars=tab:>~,nbsp:_,trail:.
 :set path+=**
 :set wildmenu
 :set shortmess+=A
+set splitbelow            " Splits show up below by default
+set splitright            " Splits go to the right by default
 
 
 " netrw
@@ -99,6 +99,9 @@ set smartcase           "Be smart about case sensitivity when searching
 set wildmode=list:longest     " Wildcard matches show a list, matching the longest first
 set wildignore+=.git,.hg,.svn " Ignore version control repos
 set wildignore+=*.swp         " Ignore vim backups
+set wildignore+=*/tmp/*,*.so,*.o,*.zip         " Ignore
+
+
 
 " Home path
 let g:vim_home_path = "~/nvim"
@@ -134,6 +137,9 @@ cmap w!! %!sudo tee > /dev/null %
 " Grep
 :command! -nargs=1 GG grep! -rnI <f-args> **
 
+" Make Ctags
+:command! Tag !ctags -R .
+
 " Buffer management
 nnoremap <leader>d   :bd<cr>
 
@@ -147,6 +153,7 @@ nnorema <leader>l :set number! relativenumber!<cr>
 nnoremap <leader>t :CtrlP <cr>
 nnoremap <leader>b :CtrlPBuffer <cr>
 nnoremap <leader>/ :CtrlPLine<cr>
+nnoremap <leader>] :CtrlPTag<cr>
 
 " Tabs
 map <C-t> :tabnew<CR>
@@ -154,8 +161,7 @@ map <C-c> :tabclose<CR>
 map <C-]> :tabnext<CR>
 
 " :map <F2> :NERDTreeToggle %<CR>
-:map <F2> :browse oldfiles <CR>
-:map <F3> :NERDTreeToggle %<CR>
+" :map <F3> :e.<CR>
 :map <F4> :e %%/ <CR>
 ":map <F4> :e. <CR>
 :map <F5> :execute "noautocmd grep! -rnI " . expand("<cword>") . " **" <BAR> cw <CR>
@@ -203,3 +209,10 @@ au BufNew,BufRead * setl fo-=orc
 "----------------------------------------------------------------------
 " CtrlP
 let g:ctrlp_max_files = 10000
+let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+let g:ctrlp_custom_ignore = {
+    \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+    \ 'file': '\v\.(exe|so|dll)$',
+    \ 'link': 'some_bad_symbolic_links',
+    \ }
+" let g:ctrlp_user_command = 'find %s -type f'        " MacOSX/Linux
