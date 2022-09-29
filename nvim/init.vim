@@ -76,7 +76,7 @@ set splitright            " Splits go to the right by default
 let g:netrw_banner=0
 let g:netrw_browse_split=0
 let g:netrw_altv=1
-let g:netrw_liststyle=3
+let g:netrw_liststyle=0
 autocmd FileType netrw setl bufhidden=delete
 "au BufNewFile,BufRead,BufReadPost *.sv set syntax=verilog
 let NERDTreeShowHidden=1
@@ -147,21 +147,26 @@ nnoremap <leader>d   :bd<cr>
 nnoremap <leader>q :q<cr>
 
 " line number
-nnorema <leader>l :set number! relativenumber!<cr>
+nnorema <leader>n :set number! relativenumber!<cr>
+
+" Get rid of search highlights
+noremap <silent><leader>/ :nohlsearch<cr>
 
 " CtrlP
-nnoremap <leader>t :CtrlP <cr>
+nnoremap <leader>f :CtrlP <cr>
 nnoremap <leader>b :CtrlPBuffer <cr>
-nnoremap <leader>/ :CtrlPLine<cr>
+nnoremap <leader>l :CtrlPLine<cr>
 nnoremap <leader>] :CtrlPTag<cr>
+
+nnoremap <leader>g :GG
 
 " Tabs
 map <C-t> :tabnew<CR>
 map <C-c> :tabclose<CR>
 map <C-]> :tabnext<CR>
 
-" :map <F2> :NERDTreeToggle %<CR>
-" :map <F3> :e.<CR>
+:map <F2> :vsplit<CR>
+:map <F3> :cw<CR>
 :map <F4> :e %%/ <CR>
 ":map <F4> :e. <CR>
 :map <F5> :execute "noautocmd grep! -rnI " . expand("<cword>") . " **" <BAR> cw <CR>
