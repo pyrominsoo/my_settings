@@ -5,11 +5,10 @@ export PATH=/usr/local/cuda-11.4/bin:/usr/local/cuda-11.3/bin${PATH:+:${PATH}}
 alias dfa="df -h /dev/nvme0n1p2 /dev/sda1 /dev/sdb1"
 alias gg="grep -rn"
 
-alias rl="ranger --choosedir=$HOME/.rangerdir; cd `cat $HOME/.rangerdir`"
+alias rl='ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; cd "$LASTDIR"'
 
 alias ll="ls --color -alF"
 alias la="ls --color -A"
-alias l ="ls --color -CF"
 alias ls="ls --color -CF"
 
 alias tl="tmux ls"
