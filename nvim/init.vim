@@ -76,7 +76,7 @@ set splitright            " Splits go to the right by default
 let g:netrw_banner=0
 let g:netrw_browse_split=0
 let g:netrw_altv=1
-let g:netrw_liststyle=3
+let g:netrw_liststyle=0
 autocmd FileType netrw setl bufhidden=delete
 "au BufNewFile,BufRead,BufReadPost *.sv set syntax=verilog
 let NERDTreeShowHidden=1
