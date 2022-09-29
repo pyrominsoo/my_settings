@@ -19,6 +19,7 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-fugitive'
+Plug 'junegunn/vim-easy-align'
 
 " Plug 'nvim-treesitter/nvim-treesitter'
 " Plug 'nvim-treesitter/nvim-treesitter-context'
@@ -158,8 +159,6 @@ nnoremap <leader>b :CtrlPBuffer <cr>
 nnoremap <leader>l :CtrlPLine<cr>
 nnoremap <leader>] :CtrlPTag<cr>
 
-nnoremap <leader>g :GG
-
 " Tabs
 map <C-t> :tabnew<CR>
 map <C-c> :tabclose<CR>
@@ -187,12 +186,18 @@ nnoremap ,right : -1read $HOME/.vim/copyright.cpp<CR>
 inoremap {<CR> {<CR>}<ESC>O
 inoremap {;<CR> {<CR>};<ESC>O
 
+" vim-easy-align
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
 
 "----------------------------------------------------------------------
 " Autocommands
 "----------------------------------------------------------------------
 " Clear whitespace at the end of lines automatically
-autocmd BufWritePre * :%s/\s\+$//e
+" autocmd BufWritePre * :%s/\s\+$//e
 
 " Don't fold anything.
 autocmd BufWinEnter * set foldlevel=999999
