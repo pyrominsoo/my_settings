@@ -69,8 +69,8 @@ set listchars=tab:>~,nbsp:_,trail:.
 :set path+=**
 :set wildmenu
 :set shortmess+=A
-set splitbelow            " Splits show up below by default
-set splitright            " Splits go to the right by default
+" set splitbelow            " Splits show up below by default
+" set splitright            " Splits go to the right by default
 
 
 " netrw
@@ -137,6 +137,7 @@ cmap w!! %!sudo tee > /dev/null %
 
 " Grep
 :command! -nargs=1 GG grep! -rnI <f-args> **
+nnoremap <leader>g :GG
 
 " Make Ctags
 :command! Tag !ctags -R .
