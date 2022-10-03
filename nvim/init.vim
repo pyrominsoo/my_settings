@@ -120,6 +120,10 @@ set writebackup
 "----------------------------------------------------------------------
 
 " Make navigating around splits easier
+nnoremap <leader>wj <C-w>j
+nnoremap <leader>wk <C-w>k
+nnoremap <leader>wh <C-w>h
+nnoremap <leader>wl <C-w>l
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
