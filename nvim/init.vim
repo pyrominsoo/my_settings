@@ -137,7 +137,7 @@ cmap w!! %!sudo tee > /dev/null %
 
 " Grep
 :command! -nargs=1 GG grep! -rnI <f-args> **
-nnoremap <leader>g :GG
+nnoremap <leader>g :grep! -rnI 
 
 " Make Ctags
 :command! Tag !ctags -R .
