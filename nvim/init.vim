@@ -164,6 +164,9 @@ nnoremap <leader>b :CtrlPBuffer <cr>
 nnoremap <leader>l :CtrlPLine<cr>
 nnoremap <leader>] :CtrlPTag<cr>
 
+" Copying filename
+nmap gy :let @" = expand("%")<cr>
+
 " Tabs
 map <C-t> :tabnew<CR>
 map <C-c> :tabclose<CR>
