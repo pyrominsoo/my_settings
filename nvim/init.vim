@@ -118,6 +118,10 @@ set writebackup
 "----------------------------------------------------------------------
 " Key Mappings
 "----------------------------------------------------------------------
+" Remap a key sequence in insert mode to kick me out to normal
+" mode. This makes it so this key sequence can never be typed
+" again in insert mode, so it has to be unique.
+inoremap jj <esc>
 
 " Make navigating around splits easier
 nnoremap <leader>wj <C-w>j
