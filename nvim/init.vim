@@ -175,6 +175,7 @@ nmap gy :let @" = expand("%")<cr>
 map <C-t> :tabnew<CR>
 map <C-c> :tabclose<CR>
 map <C-]> :tabnext<CR>
+map <leader>t :tabnext<CR>
 
 :map <F2> :vsplit<CR>
 :map <F3> :cw<CR>
