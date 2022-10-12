@@ -144,7 +144,7 @@ cmap w!! %!sudo tee > /dev/null %
 :cabbr <expr> %% expand('%:p:h')
 
 " Grep
-":command! -nargs=1 GG grep! -rnI <f-args> **
+":command! -nargs=1 GG lgrep! -rnI <f-args> **
 
 " Make Ctags
 :command! Tag !ctags -R .
@@ -177,11 +177,11 @@ map <C-]> :tabnext<CR>
 map <leader>t :tabnext<CR>
 
 :map <F2> :vsplit<CR>
-:map <F3> :cw<CR>
+:map <F3> :lw<CR>
 :map <F4> :e %%/ <CR>
 ":map <F4> :e. <CR>
-":map <F5> :execute "noautocmd grep! -rnI " . expand("<cword>") . " **" <BAR> cw <CR>
-:map <F5> :execute "noautocmd grep " . expand("<cword>") . "" <BAR> cw <CR>
+":map <F5> :execute "noautocmd grep! -rnI " . expand("<cword>") . " **" <BAR> lw <CR>
+:map <F5> :execute "noautocmd lgrep " . expand("<cword>") . "" <BAR> lw <CR>
 :nnoremap <F6> :cd ..<CR> :pwd<CR>
 :nnoremap <F7> :cd %:p:h<CR> :pwd<CR>
 :nnoremap <F8> :set invpaste paste?<CR>
