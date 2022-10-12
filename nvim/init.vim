@@ -144,8 +144,7 @@ cmap w!! %!sudo tee > /dev/null %
 :cabbr <expr> %% expand('%:p:h')
 
 " Grep
-:command! -nargs=1 GG grep! -rnI <f-args> **
-nnoremap <leader>g :grep! -rnI 
+":command! -nargs=1 GG grep! -rnI <f-args> **
 
 " Make Ctags
 :command! Tag !ctags -R .
@@ -181,7 +180,8 @@ map <leader>t :tabnext<CR>
 :map <F3> :cw<CR>
 :map <F4> :e %%/ <CR>
 ":map <F4> :e. <CR>
-:map <F5> :execute "noautocmd grep! -rnI " . expand("<cword>") . " **" <BAR> cw <CR>
+":map <F5> :execute "noautocmd grep! -rnI " . expand("<cword>") . " **" <BAR> cw <CR>
+:map <F5> :execute "noautocmd grep " . expand("<cword>") . "" <BAR> cw <CR>
 :nnoremap <F6> :cd ..<CR> :pwd<CR>
 :nnoremap <F7> :cd %:p:h<CR> :pwd<CR>
 :nnoremap <F8> :set invpaste paste?<CR>
@@ -205,6 +205,16 @@ xmap ga <Plug>(EasyAlign)
 
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
+
+
+"----------------------------------------------------------------------
+" Ripgrep from vim
+"----------------------------------------------------------------------
+set grepprg=rg\ --vimgrep\ --no-heading\ --smart-case
+nnoremap <leader>g :silent lgrep<Space>
+nnoremap <silent> [f :lprevious<CR>
+nnoremap <silent> ]f :lnext<CR>
+set grepformat=%f:%l:%c:%m,%f:%l:%m
 
 "----------------------------------------------------------------------
 " Autocommands
