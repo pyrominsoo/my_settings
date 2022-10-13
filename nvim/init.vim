@@ -149,6 +149,9 @@ cmap w!! %!sudo tee > /dev/null %
 " Make Ctags
 :command! Tag !ctags -R .
 
+" Let W do write, same as w
+:command! W w
+
 " Buffer management
 nnoremap <leader>d   :bd<cr>
 
