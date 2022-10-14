@@ -233,12 +233,12 @@ autocmd VimEnter * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 au BufNew,BufRead * setl fo-=orc
 
 " Automatic toggle with relative line number
-:set number
-:augroup numbertoggle
-:  autocmd!
-:  autocmd BufEnter,FocusGained,InsertLeave,WinEnter * if &nu && mode() != "i" | set rnu   | endif
-:  autocmd BufLeave,FocusLost,InsertEnter,WinLeave   * if &nu                  | set nornu | endif
-:augroup END
+:set number relativenumber
+" :augroup numbertoggle
+" :  autocmd!
+" :  autocmd BufEnter,FocusGained,InsertLeave,WinEnter * if &nu && mode() != "i" | set rnu   | endif
+" :  autocmd BufLeave,FocusLost,InsertEnter,WinLeave   * if &nu                  | set nornu | endif
+" :augroup END
 
 "----------------------------------------------------------------------
 " Plugin settings
