@@ -115,6 +115,11 @@ set backup
 set undofile
 set writebackup
 
+" Line numbers
+:set number relativenumber
+
+" Always center cursor
+:set so=999
 "----------------------------------------------------------------------
 " Key Mappings
 "----------------------------------------------------------------------
@@ -176,7 +181,6 @@ nmap gy :let @" = expand("%")<cr>
 " Tabs
 map <C-t> :tabnew<CR>
 map <C-c> :tabclose<CR>
-map <C-]> :tabnext<CR>
 map <leader>t :tabnext<CR>
 
 :map <F2> :vsplit<CR>
@@ -233,7 +237,7 @@ autocmd VimEnter * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 au BufNew,BufRead * setl fo-=orc
 
 " Automatic toggle with relative line number
-:set number relativenumber
+":set number relativenumber
 " :augroup numbertoggle
 " :  autocmd!
 " :  autocmd BufEnter,FocusGained,InsertLeave,WinEnter * if &nu && mode() != "i" | set rnu   | endif
