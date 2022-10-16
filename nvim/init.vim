@@ -244,6 +244,16 @@ au BufNew,BufRead * setl fo-=orc
 " :  autocmd BufLeave,FocusLost,InsertEnter,WinLeave   * if &nu                  | set nornu | endif
 " :augroup END
 
+augroup netrw_mapping
+    autocmd!
+    autocmd filetype netrw call NetrwMapping()
+augroup END
+
+function! NetrwMapping()
+    nmap <buffer> h -
+    nmap <buffer> l <CR>
+endfunction
+
 "----------------------------------------------------------------------
 " Plugin settings
 "----------------------------------------------------------------------
