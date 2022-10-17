@@ -13,10 +13,10 @@ call plug#begin()
 " Make sure you use single quotes
 
 " Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
-Plug 'wellle/context.vim'
+" Plug 'wellle/context.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+" Plug 'vim-airline/vim-airline-themes'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'junegunn/vim-easy-align'
@@ -218,7 +218,7 @@ nmap ga <Plug>(EasyAlign)
 " Ripgrep from vim
 "----------------------------------------------------------------------
 set grepprg=rg\ --vimgrep\ --no-heading\ --smart-case
-nnoremap <leader>g :silent lgrep<Space>
+nnoremap <leader>g :lgrep!<Space>
 nnoremap <silent> [f :lprevious<CR>
 nnoremap <silent> ]f :lnext<CR>
 set grepformat=%f:%l:%c:%m,%f:%l:%m
