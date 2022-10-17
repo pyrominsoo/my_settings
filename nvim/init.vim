@@ -188,7 +188,7 @@ map <leader>t :tabnext<CR>
 :map <F4> :e %%/ <CR>
 ":map <F4> :e. <CR>
 ":map <F5> :execute "noautocmd grep! -rnI " . expand("<cword>") . " **" <BAR> lw <CR>
-:map <F5> :execute "noautocmd lgrep " . expand("<cword>") . "" <BAR> lw <CR>
+:map <F5> :execute "noautocmd lgrep! " . expand("<cword>") . "" <BAR> lw <CR>
 :nnoremap <F6> :cd ..<CR> :pwd<CR>
 :nnoremap <F7> :cd %:p:h<CR> :pwd<CR>
 :nnoremap <F8> :set invpaste paste?<CR>
