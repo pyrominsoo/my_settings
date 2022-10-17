@@ -137,6 +137,10 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
+
+nnoremap <leader>k <C-u>
+nnoremap <leader>j <C-d>
+
 if has('nvim')
   " We have to do this to fix a bug with Neovim on OS X where C-h
   " is sent as backspace for some reason.
@@ -156,9 +160,6 @@ cmap w!! %!sudo tee > /dev/null %
 
 " Let W do write, same as w
 :command! W w
-
-" Buffer management
-nnoremap <leader>d   :bd<cr>
 
 " Quitting
 nnoremap <leader>q :q<cr>
@@ -181,7 +182,7 @@ nmap gy :let @" = expand("%")<cr>
 " Tabs
 map <C-t> :tabnew<CR>
 map <C-c> :tabclose<CR>
-map <leader>t :tabnext<CR>
+" map <leader>t :tabnext<CR>
 
 :map <F2> :vsplit<CR>
 :map <F3> :lw<CR>
