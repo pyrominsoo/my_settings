@@ -165,7 +165,7 @@ cmap w!! %!sudo tee > /dev/null %
 nnoremap <leader>q :q<cr>
 
 " line number
-nnorema <leader>n :set number! relativenumber!<cr>
+nnorema <leader>t :set number! relativenumber!<cr>
 
 " Get rid of search highlights
 noremap <silent><leader>/ :nohlsearch<cr>
