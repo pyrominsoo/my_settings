@@ -20,6 +20,7 @@ Plug 'vim-airline/vim-airline'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'junegunn/vim-easy-align'
+Plug 'tpope/vim-commentary'
 
 " Plug 'nvim-treesitter/nvim-treesitter'
 " Plug 'nvim-treesitter/nvim-treesitter-context'
@@ -172,9 +173,10 @@ noremap <silent><leader>/ :nohlsearch<cr>
 
 " CtrlP
 nnoremap <leader>f :CtrlP <cr>
+nnoremap <leader>m :CtrlPMixed <cr>
 nnoremap <leader>b :CtrlPBuffer <cr>
-nnoremap <leader>l :CtrlPLine<cr>
-nnoremap <leader>] :CtrlPTag<cr>
+nnoremap <leader>l :CtrlPLine <cr>
+nnoremap <leader>] :CtrlPTag <cr>
 
 " Copying filename
 nmap gy :let @" = expand("%")<cr>
