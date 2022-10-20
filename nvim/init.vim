@@ -172,8 +172,8 @@ nnorema <leader>t :set number! relativenumber!<cr>
 noremap <silent><leader>/ :nohlsearch<cr>
 
 " CtrlP
-nnoremap <leader>f :CtrlP <cr>
-nnoremap <leader>m :CtrlPMixed <cr>
+" nnoremap <leader>f :CtrlP <cr>
+nnoremap <leader>f :CtrlPMixed <cr>
 nnoremap <leader>b :CtrlPBuffer <cr>
 nnoremap <leader>l :CtrlPLine <cr>
 nnoremap <leader>] :CtrlPTag <cr>
