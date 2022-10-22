@@ -21,6 +21,7 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'junegunn/vim-easy-align'
 Plug 'tpope/vim-commentary'
+Plug 'vimwiki/vimwiki'
 
 " Plug 'nvim-treesitter/nvim-treesitter'
 " Plug 'nvim-treesitter/nvim-treesitter-context'
@@ -128,6 +129,13 @@ set writebackup
 " mode. This makes it so this key sequence can never be typed
 " again in insert mode, so it has to be unique.
 inoremap jj <esc>
+
+" Keeping text in register after paste
+xnoremap <leader>p \_dP
+
+" Remap vim wiki to avoid conflict
+nmap <leader>wf <Plug>Vimwiki2HTML
+nmap <leader>wff <Plug>Vimwiki2HTMLBrowse
 
 " Make navigating around splits easier
 nnoremap <leader>wj <C-w>j
