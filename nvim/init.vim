@@ -208,10 +208,10 @@ map <C-c> :tabclose<CR>
 
 
 " templates
-nnoremap ,class : -1read $HOME/.vim/class.cpp<CR>
-nnoremap ,for : -1read $HOME/.vim/for_iter.cpp<CR>
-nnoremap ,head : -1read $HOME/.vim/head.cpp<CR>
-nnoremap ,right : -1read $HOME/.vim/copyright.cpp<CR>
+nnoremap <leader>,class : -1read $HOME/.vim/class.cpp<CR>
+nnoremap <leader>,for : -1read $HOME/.vim/for_iter.cpp<CR>
+nnoremap <leader>,head : -1read $HOME/.vim/head.cpp<CR>
+nnoremap <leader>,right : -1read $HOME/.vim/copyright.cpp<CR>
 
 " Braces
 inoremap {<CR> {<CR>}<ESC>O
