@@ -187,7 +187,8 @@ nnoremap <leader>l :CtrlPLine <cr>
 nnoremap <leader>] :CtrlPTag <cr>
 
 " Copying filename
-nmap gy :let @" = expand("%")<cr>
+" nmap gy :let @" = expand("%")<cr>
+nmap gy :let @" = join([expand("%"), line(".")], ':')<cr>
 
 " Tabs
 map <C-t> :tabnew<CR>
