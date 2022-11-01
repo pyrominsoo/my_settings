@@ -130,9 +130,6 @@ set writebackup
 " again in insert mode, so it has to be unique.
 inoremap jj <esc>
 
-" Keeping text in register after paste
-xnoremap <leader>p \_dP
-
 " Remap vim wiki to avoid conflict
 nmap <leader>wf <Plug>Vimwiki2HTML
 nmap <leader>wff <Plug>Vimwiki2HTMLBrowse
@@ -188,7 +185,10 @@ nnoremap <leader>] :CtrlPTag <cr>
 
 " Copying filename
 " nmap gy :let @" = expand("%")<cr>
-nmap gy :let @" = join([join([expand("%"), line(".")], ':'), getline('.')], "\n")<cr>
+" nmap gy :let @" = join([join([expand("%"), line(".")], ':'), getline('.')], "\n")<cr>
+" nmap gy :let @" = join([join([expand("%"), line(".")], ':'), getline('.')], "\n")<cr>
+nmap gy :let @l = join([expand("%"), line(".")], ':')<cr>
+nmap gp "lp
 
 " Tabs
 map <C-t> :tabnew<CR>
