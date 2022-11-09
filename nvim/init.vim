@@ -144,7 +144,7 @@ nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
 
-nnoremap s <C-w>w
+nnoremap <leader>s <C-w>w
 
 nnoremap <leader>k <C-u>
 nnoremap <leader>j <C-d>
