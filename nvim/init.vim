@@ -227,6 +227,20 @@ xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 
+"----------------------------------------------------------------------
+" Modified time
+"----------------------------------------------------------------------
+function! FileTime()
+  let ext=tolower(expand("%:e"))
+  let fname=tolower(expand('%<'))
+  let filename=fname . '.' . ext
+  let msg=""
+  let msg=msg." ".strftime("(Modified %b,%d %y %H:%M:%S)",getftime(filename))
+  let msg=msg." ".strftime("%b,%d %y %H:%M:%S")
+  return msg
+endfunction
+
+nmap <leader>m :echo FileTime()<cr>
 
 "----------------------------------------------------------------------
 " Ripgrep from vim
@@ -241,7 +255,7 @@ set grepformat=%f:%l:%c:%m,%f:%l:%m
 " Autocommands
 "----------------------------------------------------------------------
 " Clear whitespace at the end of lines automatically
-autocmd BufWritePre * :%s/\s\+$//e
+" autocmd BufWritePre * :%s/\s\+$//e
 
 " Don't fold anything.
 autocmd BufWinEnter * set foldlevel=999999
@@ -282,3 +296,6 @@ let g:ctrlp_custom_ignore = {
     \ 'link': 'some_bad_symbolic_links',
     \ }
 " let g:ctrlp_user_command = 'find %s -type f'        " MacOSX/Linux
+
+
+
