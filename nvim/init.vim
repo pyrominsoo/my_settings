@@ -74,6 +74,8 @@ set listchars=tab:>~,nbsp:_,trail:.
 " set splitbelow            " Splits show up below by default
 " set splitright            " Splits go to the right by default
 
+" Disable mouse
+set mouse=
 
 " netrw
 let g:netrw_banner=0
@@ -255,7 +257,7 @@ set grepformat=%f:%l:%c:%m,%f:%l:%m
 " Autocommands
 "----------------------------------------------------------------------
 " Clear whitespace at the end of lines automatically
-" autocmd BufWritePre * :%s/\s\+$//e
+autocmd BufWritePre * :%s/\s\+$//e
 
 " Don't fold anything.
 autocmd BufWinEnter * set foldlevel=999999
