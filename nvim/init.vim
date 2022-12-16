@@ -22,6 +22,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'junegunn/vim-easy-align'
 Plug 'tpope/vim-commentary'
 Plug 'vimwiki/vimwiki'
+Plug 'majutsushi/tagbar'
 
 " Plug 'nvim-treesitter/nvim-treesitter'
 " Plug 'nvim-treesitter/nvim-treesitter-context'
@@ -209,8 +210,7 @@ map <C-c> :tabclose<CR>
 :nnoremap <F7> :cd %:p:h<CR> :pwd<CR>
 :nnoremap <F8> :set invpaste paste?<CR>
 :set pastetoggle=<F8>
-:map <F9> :bd<CR>
-
+:map <F9> :TagbarToggle<CR>
 
 " templates
 nnoremap <leader>,class : -1read $HOME/.vim/class.cpp<CR>
@@ -228,6 +228,10 @@ xmap ga <Plug>(EasyAlign)
 
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
+
+" Go to header/source
+nnoremap <leader>hh :e %<.h
+nnoremap <leader>hs :e %<.cpp
 
 "----------------------------------------------------------------------
 " Modified time
@@ -299,5 +303,5 @@ let g:ctrlp_custom_ignore = {
     \ }
 " let g:ctrlp_user_command = 'find %s -type f'        " MacOSX/Linux
 
-
-
+" Tagbar remap
+let g:tagbar_map_showproto = "K"
