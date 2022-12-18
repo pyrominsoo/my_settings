@@ -30,7 +30,7 @@ vim.opt.updatetime = 50
 vim.g.mapleader = " "
 
 -- My settings
-vim.opt.list = true
+-- vim.opt.list = true
 vim.opt.mouse = ""
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
