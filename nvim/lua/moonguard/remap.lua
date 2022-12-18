@@ -35,6 +35,9 @@ vim.keymap.set("i", "jj", "<esc>")
 vim.keymap.set("n", "<leader>wf", "<Plug>Vimwiki2HTML")
 vim.keymap.set("n", "<leader>wff", "<Plug>Vimwiki2HTMLBrowse")
 
+vim.keymap.set("x", "ga", "<Plug>(EasyAlign)")
+vim.keymap.set("n", "ga", "<Plug>(EasyAlign)")
+
 vim.keymap.set("n", "<leader>wj", "<C-w>j")
 vim.keymap.set("n", "<leader>wk", "<C-w>k")
 vim.keymap.set("n", "<leader>wh", "<C-w>h")
@@ -50,7 +53,7 @@ vim.keymap.set("n", "<leader>j", "<C-d>")
 
 vim.keymap.set("n", "<leader>q", ":q<cr>")
 
-vim.keymap.set("n", "<leader>t", ":set number! relativenumber!<cr>")
+vim.keymap.set("n", "<leader>n", ":set number! relativenumber!<cr>")
 
 vim.keymap.set("n", "<leader>/", ":nohlsearch<cr>", { silent = true })
 
@@ -59,10 +62,13 @@ vim.keymap.set("n", "gp", [["lp]])
 
 vim.keymap.set("n", "<leader>ws", [[:vsplit<CR>]])
 
-vim.keymap.set("n", "<F3>", ":lw<CR>")
+vim.keymap.set("n", "<F5>", ":lw<CR>")
+vim.keymap.set("n", "<F6>", ":cd ..<CR> :pwd<CR>")
+vim.keymap.set("n", "<F7>", ":cd %:p:h<CR> :pwd<CR>")
 vim.keymap.set("n", "<F8>", ":set invpaste paste?<CR>")
 vim.keymap.set("n", "<F9>", ":TagbarToggle<CR>")
 
 vim.keymap.set("n", "<leader>pr", ":lgrep!<Space>")
 vim.keymap.set("n", "[f", ":lprevious<CR>")
 vim.keymap.set("n", "]f", ":lnext<CR>")
+
