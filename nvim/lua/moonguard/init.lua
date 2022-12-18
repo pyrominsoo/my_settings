@@ -21,6 +21,7 @@ autocmd('TextYankPost', {
     end,
 })
 
+vim.cmd(':autocmd FileType qf wincmd J')
 vim.cmd('source ~/.config/nvim/netrw_mapping.vim')
 
 vim.g.netrw_browse_split = 0
