@@ -3,6 +3,7 @@ require("moonguard.remap")
 
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
+local MoonguardGroup = augroup('Moonguard', {})
 local yank_group = augroup('HighlightYank', {})
 local netrw_mapping = augroup('NetrwMapping', {})
 
@@ -19,6 +20,12 @@ autocmd('TextYankPost', {
             timeout = 40,
         })
     end,
+})
+
+autocmd({"BufWritePre"}, {
+    group = MoonguardGroup,
+    pattern = "*",
+    command = [[%s/\s\+$//e]],
 })
 
 vim.cmd(':autocmd FileType qf wincmd J')
