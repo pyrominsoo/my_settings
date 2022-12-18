@@ -26,6 +26,7 @@ alias youdlF="yt-dlp -F"
 alias youdla="yt-dlp --extract-audio --audio-format mp3 --audio-quality 0"
 
 alias vi="nvim"
+alias v="vi ."
 
 alias chrome="google-chrome"
 
