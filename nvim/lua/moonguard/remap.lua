@@ -62,7 +62,8 @@ vim.keymap.set("n", "gp", [["lp]])
 
 vim.keymap.set("n", "<leader>ws", [[:vsplit<CR>]])
 
-vim.keymap.set("n", "<F5>", ":lw<CR>")
+vim.keymap.set("n", "<F4>", ":lw<CR>")
+vim.cmd('source ~/.config/nvim/f5.vim')
 vim.keymap.set("n", "<F6>", ":cd ..<CR> :pwd<CR>")
 vim.keymap.set("n", "<F7>", ":cd %:p:h<CR> :pwd<CR>")
 vim.keymap.set("n", "<F8>", ":set invpaste paste?<CR>")
