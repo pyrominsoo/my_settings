@@ -72,4 +72,6 @@ vim.keymap.set("n", "<F9>", ":TagbarToggle<CR>")
 vim.keymap.set("n", "<leader>pr", ":lgrep!<Space>")
 vim.keymap.set("n", "[f", ":lprevious<CR>")
 vim.keymap.set("n", "]f", ":lnext<CR>")
+vim.keymap.set("n", "[g", ":cprev<CR>")
+vim.keymap.set("n", "]g", ":cnext<CR>")
 
