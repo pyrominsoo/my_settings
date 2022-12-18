@@ -62,7 +62,7 @@ vim.keymap.set("n", "gp", [["lp]])
 
 vim.keymap.set("n", "<leader>ws", [[:vsplit<CR>]])
 
-vim.keymap.set("n", "<F4>", ":lw<CR>")
+vim.keymap.set("n", "<F3>", ":lw<CR>")
 vim.keymap.set("n", "<F5>", [[:lgrep! <C-r><C-w> <BAR> lw <CR>]])
 vim.keymap.set("n", "<F6>", ":cd ..<CR> :pwd<CR>")
 vim.keymap.set("n", "<F7>", ":cd %:p:h<CR> :pwd<CR>")
