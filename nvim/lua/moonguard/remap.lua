@@ -62,16 +62,15 @@ vim.keymap.set("n", "gp", [["lp]])
 
 vim.keymap.set("n", "<leader>ws", [[:vsplit<CR>]])
 
-vim.keymap.set("n", "<F3>", ":lw<CR>")
-vim.keymap.set("n", "<F5>", [[:lgrep! <C-r><C-w> <BAR> lw <CR>]])
+vim.keymap.set("n", "<F3>", ":botright cwindow<CR>")
+vim.keymap.set("n", "<F5>", [[:grep! <C-r><C-w> <BAR> lw <CR>]])
 vim.keymap.set("n", "<F6>", ":cd ..<CR> :pwd<CR>")
 vim.keymap.set("n", "<F7>", ":cd %:p:h<CR> :pwd<CR>")
 vim.keymap.set("n", "<F8>", ":set invpaste paste?<CR>")
 vim.keymap.set("n", "<F9>", ":TagbarToggle<CR>")
 
-vim.keymap.set("n", "<leader>pr", ":lgrep!<Space>")
-vim.keymap.set("n", "[f", ":lprevious<CR>")
-vim.keymap.set("n", "]f", ":lnext<CR>")
-vim.keymap.set("n", "[g", ":cprev<CR>")
-vim.keymap.set("n", "]g", ":cnext<CR>")
+vim.keymap.set("n", "[g", ":lprevious<CR>")
+vim.keymap.set("n", "]g", ":lnext<CR>")
+vim.keymap.set("n", "[f", ":cprev<CR>")
+vim.keymap.set("n", "]f", ":cnext<CR>")
 
