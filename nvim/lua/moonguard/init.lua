@@ -21,7 +21,7 @@ autocmd('TextYankPost', {
     end,
 })
 
-vim.cmd('source ~/nvim/netrw_mapping.vim')
+vim.cmd('source ~/.config/nvim/netrw_mapping.vim')
 
 vim.g.netrw_browse_split = 0
 vim.g.netrw_banner = 0
