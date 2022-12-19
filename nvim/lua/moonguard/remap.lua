@@ -63,7 +63,7 @@ vim.keymap.set("n", "gp", [["lp]])
 vim.keymap.set("n", "<leader>ws", [[:vsplit<CR>]])
 
 vim.keymap.set("n", "<F3>", ":botright cwindow<CR>")
-vim.keymap.set("n", "<F5>", [[:grep! <C-r><C-w> <BAR> lw <CR>]])
+vim.keymap.set("n", "<F5>", [[:grep! <C-r><C-w> <BAR> cw <CR>]])
 vim.keymap.set("n", "<F6>", ":cd ..<CR> :pwd<CR>")
 vim.keymap.set("n", "<F7>", ":cd %:p:h<CR> :pwd<CR>")
 vim.keymap.set("n", "<F8>", ":set invpaste paste?<CR>")
