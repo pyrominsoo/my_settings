@@ -50,7 +50,7 @@ return require('packer').startup(function(use)
     -- }
 
     -- My additions
-    use('wellle/context.vim')
+    -- use('wellle/context.vim')
     use('airblade/vim-gitgutter')
     use('vim-airline/vim-airline')
     use('vim-airline/vim-airline-themes')
