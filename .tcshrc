@@ -15,6 +15,7 @@ alias ta "tmux attach"
 alias tat "tmux attach -t"
 
 alias vi "nvim"
+alias v "nvim ."
 
 alias :q "exit"
 
