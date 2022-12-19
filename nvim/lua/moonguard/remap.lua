@@ -67,6 +67,7 @@ vim.keymap.set("n", "<F5>", [[:grep! <C-r><C-w> <BAR> lw <CR>]])
 vim.keymap.set("n", "<F6>", ":cd ..<CR> :pwd<CR>")
 vim.keymap.set("n", "<F7>", ":cd %:p:h<CR> :pwd<CR>")
 vim.keymap.set("n", "<F8>", ":set invpaste paste?<CR>")
+vim.cmd(':set pastetoggle=<F8>')
 vim.keymap.set("n", "<F9>", ":TagbarToggle<CR>")
 
 vim.keymap.set("n", "[g", ":lprevious<CR>")
