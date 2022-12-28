@@ -37,7 +37,7 @@ vim.g.netrw_altv = 1
 
 vim.api.nvim_create_user_command(
     'Tag',
-    '!ctags -R .',
+    '!./tag.sh',
     {}
 )
 
