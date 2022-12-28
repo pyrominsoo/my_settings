@@ -68,6 +68,3 @@ vim.keymap.set("n", "]g", ":lnext<CR>")
 vim.keymap.set("n", "[f", "<cmd>cprev<CR>zz")
 vim.keymap.set("n", "]f", "<cmd>cnext<CR>zz")
 
-vim.keymap.set("n", "<leader>pt", ":ts ")
-
-
