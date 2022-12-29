@@ -19,6 +19,6 @@ alias v "nvim ."
 
 alias :q "exit"
 
-# alias sd "echo $(find * -type d | fzf)"
-# alias vd "cd $(find * -type d | fzf) && nvim ."
+alias sd "cd ~ && source .sd"
+alias vd "cd ~ && source .sd && nvim ."
 

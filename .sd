@@ -1,0 +1,3 @@
+#!/bin/tcsh
+
+cd `find * -type d | fzf`;
