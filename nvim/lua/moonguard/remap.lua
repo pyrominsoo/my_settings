@@ -46,7 +46,8 @@ vim.keymap.set("n", "<leader>j", "<C-d>")
 
 vim.keymap.set("n", "<leader>q", ":q<cr>")
 
-vim.keymap.set("n", "<leader>n", ":set number! relativenumber!<cr>")
+vim.keymap.set("n", "<leader>nc", ":set nonumber nornu scl=no<cr>")
+vim.keymap.set("n", "<leader>ns", ":set number relativenumber scl=yes<cr>")
 
 vim.keymap.set("n", "<leader>/", ":nohlsearch<cr>", { silent = true })
 
