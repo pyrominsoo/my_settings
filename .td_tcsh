@@ -1,0 +1,5 @@
+#!/bin/tcsh
+
+cd `find * -type d | fzf`;
+set name=`basename $PWD`;
+tmux new -A -s $name;

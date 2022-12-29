@@ -21,4 +21,5 @@ alias :q "exit"
 
 alias sd "cd ~ && source .sd"
 alias vd "cd ~ && source .sd && nvim ."
+alias td "cd ~ && source .td"
 
