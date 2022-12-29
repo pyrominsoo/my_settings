@@ -32,6 +32,7 @@ alias chrome="google-chrome"
 
 # bash | zsh
 alias sd="cd ~ && cd \$(find * -type d | fzf)"
+alias vd="cd ~ && cd \$(find * -type d | fzf) && nvim ."
 
 function cd {
     builtin cd "$@" && ls -F
@@ -44,5 +45,4 @@ function ranger {
         exit
     fi
 }
-
 
