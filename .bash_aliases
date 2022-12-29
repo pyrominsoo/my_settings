@@ -31,8 +31,8 @@ alias v="vi ."
 alias chrome="google-chrome"
 
 # bash | zsh
-alias sd="cd \$(find * -type d | fzf)"
-alias vd="cd \$(find * -type d | fzf) && nvim ."
+alias sd="cd ~ && cd \$(find * -type d | fzf)"
+alias vd="cd ~ && cd \$(find * -type d | fzf) && nvim ."
 
 function cd {
     builtin cd "$@" && ls -F
