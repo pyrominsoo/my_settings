@@ -19,3 +19,5 @@ alias v "nvim ."
 
 alias :q "exit"
 
+alias sd "cd ~ && cd \$(find * -type d | fzf)"
+

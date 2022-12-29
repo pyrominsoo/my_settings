@@ -30,6 +30,9 @@ alias v="vi ."
 
 alias chrome="google-chrome"
 
+# bash | zsh
+alias sd="cd ~ && cd \$(find * -type d | fzf)"
+
 function cd {
     builtin cd "$@" && ls -F
     }
