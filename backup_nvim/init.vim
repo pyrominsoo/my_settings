@@ -76,7 +76,7 @@ set listchars=tab:>~,nbsp:_,trail:.
 " set splitright            " Splits go to the right by default
 
 " Disable mouse
-set mouse=
+" set mouse=
 
 " netrw
 let g:netrw_banner=0
