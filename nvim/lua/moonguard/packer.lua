@@ -66,4 +66,5 @@ return require('packer').startup(function(use)
             vim.cmd('colorscheme codedark')
         end
     })
+    use('tpope/vim-surround')
 end)
