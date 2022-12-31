@@ -5,7 +5,6 @@ local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 local MoonguardGroup = augroup('Moonguard', {})
 local yank_group = augroup('HighlightYank', {})
-local netrw_mapping = augroup('NetrwMapping', {})
 
 function R(name)
     require("plenary.reload").reload_module(name)
