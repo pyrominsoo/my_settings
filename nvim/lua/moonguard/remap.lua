@@ -72,3 +72,4 @@ vim.keymap.set("n", "]f", "<cmd>cnext<CR>zz")
 
 vim.keymap.set("n", "<F2>", "i<CR><ESC>")
 vim.keymap.set("i", "<F2>", "<ESC>a<CR><ESC>")
+vim.keymap.set("n", "<leader>wt", [[:.s/.*/===== \0 =====/<CR>]])
