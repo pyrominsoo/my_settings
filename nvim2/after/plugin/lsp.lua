@@ -43,6 +43,9 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] =
     }
 )
 
+vim.keymap.set('n', '<leader>ls', ":LspStart<cr>")
+vim.keymap.set('n', '<leader>lz', ":LspStop<cr>")
+
 lsp.on_attach(function(client, bufnr)
   local opts = {buffer = bufnr, remap = false}
 
