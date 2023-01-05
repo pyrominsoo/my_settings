@@ -16,6 +16,9 @@ local cmp_mappings = lsp.defaults.cmp_mappings({
   ["<C-Space>"] = cmp.mapping.complete(),
 })
 
+vim.keymap.set('n', '<leader>lc', ":lua require('cmp').setup.buffer { enabled = true}<cr>")
+vim.keymap.set('n', '<leader>lx', ":lua require('cmp').setup.buffer { enabled = false}<cr>")
+
 -- disable completion with tab
 -- this helps with copilot setup
 cmp_mappings['<Tab>'] = nil
