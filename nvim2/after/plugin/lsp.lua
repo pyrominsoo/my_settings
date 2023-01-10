@@ -31,6 +31,17 @@ lsp.setup_nvim_cmp({
   mapping = cmp_mappings
 })
 
+require'lspconfig'.sumneko_lua.setup {
+    settings = {
+        Lua = {
+            diagnostics = {
+                globals = { 'vim' }
+            }
+        }
+    }
+}
+
+
 lsp.set_preferences({
     suggest_lsp_servers = false,
     sign_icons = {
