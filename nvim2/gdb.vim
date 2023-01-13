@@ -20,13 +20,22 @@ function! AddWatch()
     redir END
 endfunction
 
+function! AddPrint()
+    redir >> print.gdb
+    let varname = expand('<cword>')
+    echo 'p ' . varname
+    redir END
+endfunction
+
 function! DebugClear()
-    !rm breaks.gdb
-    !rm disp.gdb
-    !rm watch.gdb
+    !rm -f breaks.gdb
+    !rm -f disp.gdb
+    !rm -f watch.gdb
+    !rm -f print.gdb
 endfunction
 
 nmap <leader>db :call BreakLine()<cr>
-nmap <leader>dp :call AddDisplay()<cr>
 nmap <leader>dw :call AddWatch()<cr>
 nmap <leader>dc :call DebugClear()<cr>
+nmap <leader>dp :call AddPrint()<cr>
+nmap <leader>dd :call AddDisplay()<cr>
