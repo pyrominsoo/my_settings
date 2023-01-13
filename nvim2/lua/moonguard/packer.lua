@@ -58,7 +58,7 @@ return require('packer').startup(function(use)
     use('tpope/vim-commentary')
     use('vimwiki/vimwiki')
     use('majutsushi/tagbar')
-    -- use('Raimondi/delimitMate')
+    use('Raimondi/delimitMate')
     use({
         'tomasiser/vim-code-dark',
         as = 'codedark',
