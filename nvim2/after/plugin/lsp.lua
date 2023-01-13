@@ -16,9 +16,9 @@ local cmp_mappings = lsp.defaults.cmp_mappings({
   ["<C-Space>"] = cmp.mapping.complete(),
 })
 
-cmp.setup({
-    enabled = false
-})
+-- cmp.setup({
+--     enabled = false
+-- })
 vim.keymap.set('n', '<leader>lc', ":lua require('cmp').setup { enabled = true}<cr>")
 vim.keymap.set('n', '<leader>lx', ":lua require('cmp').setup { enabled = false}<cr>")
 
