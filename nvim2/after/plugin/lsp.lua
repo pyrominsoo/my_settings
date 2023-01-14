@@ -52,13 +52,15 @@ lsp.set_preferences({
     }
 })
 
-vim.lsp.handlers["textDocument/publishDiagnostics"] =
-    vim.lsp.with(
-    vim.lsp.diagnostic.on_publish_diagnostics,
-    {
-        virtual_text = true,
-    }
-)
+-- MINSOO: commented out because hover text works better.
+-- The code for hover text begin near line 76
+-- vim.lsp.handlers["textDocument/publishDiagnostics"] =
+--     vim.lsp.with(
+--     vim.lsp.diagnostic.on_publish_diagnostics,
+--     {
+--         virtual_text = true,
+--     }
+-- )
 
 vim.keymap.set('n', '<leader>ls', ":LspStart<cr>")
 vim.keymap.set('n', '<leader>lz', ":LspStop<cr>")
@@ -70,6 +72,21 @@ lsp.on_attach(function(client, bufnr)
       vim.cmd.LspStop('eslint')
       return
   end
+
+  vim.api.nvim_create_autocmd("CursorHold", {
+    buffer = bufnr,
+    callback = function()
+      local opts = {
+        focusable = false,
+        close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+        border = 'rounded',
+        source = 'always',
+        prefix = ' ',
+        scope = 'cursor',
+      }
+      vim.diagnostic.open_float(nil, opts)
+    end
+  })
 
   vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
   vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
