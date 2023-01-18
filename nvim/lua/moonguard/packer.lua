@@ -66,4 +66,11 @@ return require('packer').startup(function(use)
             vim.cmd('colorscheme codedark')
         end
     })
+    use({
+        'folke/tokyonight.nvim',
+        as = 'tokyonight',
+        config = function()
+            vim.cmd('colorscheme tokyonight')
+        end
+    })
 end)
