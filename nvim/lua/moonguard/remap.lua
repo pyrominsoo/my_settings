@@ -84,3 +84,5 @@ vim.keymap.set("n", "<leader>,ig", [[: -1read $HOME/.config/nvim/snippets/incgua
 vim.keymap.set("n", "<leader>,wh", [[: -1read $HOME/.config/nvim/snippets/while.cpp<CR>]])
 vim.keymap.set("n", "<leader>,fn", [[: -1read $HOME/.config/nvim/snippets/func.cpp<CR>]])
 vim.keymap.set("n", "<leader>,cm", [[: -1read $HOME/.config/nvim/snippets/comment.cpp<CR>]])
+vim.keymap.set("n", "<leader>,ni", [[: -1read $HOME/.config/nvim/snippets/nvinitsk.cpp<CR>]])
+vim.keymap.set("n", "<leader>,nt", [[: -1read $HOME/.config/nvim/snippets/nvtargsk.cpp<CR>]])
