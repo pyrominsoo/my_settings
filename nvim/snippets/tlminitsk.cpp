@@ -31,7 +31,6 @@ void sendFunc () {
     tlm_phase phase = BEGIN_REQ;
     tlm::tlm_sync_enum status;
     status = ISOCKET->nb_transport_fw( *trans, phase, fw_delay );
-    ISOCKET->b_transport(TRANS, fw_delay);
     if (status == TLM_ACCEPTED) {
         in_req = true;
     }
@@ -39,6 +38,12 @@ void sendFunc () {
         SC_REPORT_ERROR("ClassName", "MSG");
     }
     AT(!TRANS.is_response_error(), "Response error from b_transport");
+
+    ISOCKET->b_transport(TRANS, fw_delay);
+    if (trans->is_response_error() ) {
+        SC_REPORT_ERROR("TLM-2", "Response error from b_transport");
+    };
+    wait(socket_delay);
 }
 tlm_sync_enum ClassName::nb_transport_bw(tlm_generic_payload &payload,
                                            tlm_phase &phase, sc_time &bwDelay)
