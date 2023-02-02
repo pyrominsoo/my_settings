@@ -14,14 +14,14 @@ function! AddDisplay()
 endfunction
 
 function! AddWatch()
-    redir >> watch.gdb
+    redir >> ref.gdb
     let varname = expand('<cword>')
     echo 'watch ' . varname
     redir END
 endfunction
 
 function! AddPrint()
-    redir >> print.gdb
+    redir >> ref.gdb
     let varname = expand('<cword>')
     echo 'p ' . varname
     redir END
@@ -30,8 +30,7 @@ endfunction
 function! DebugClear()
     !rm -f breaks.gdb
     !rm -f disp.gdb
-    !rm -f watch.gdb
-    !rm -f print.gdb
+    !rm -f ref.gdb
 endfunction
 
 nmap <leader>db :call BreakLine()<cr>
