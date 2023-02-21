@@ -43,6 +43,8 @@ vim.keymap.set({"n","v"}, "<leader>k", "<C-u>zz")
 vim.keymap.set({"n","v"}, "<leader>j", "<C-d>zz")
 vim.keymap.set({"n","v"}, "<C-j>", "<C-d>zz")
 vim.keymap.set({"n","v"}, "<C-k>", "<C-u>zz")
+vim.keymap.set({"n","v"}, "<M-j>", "<C-d>zz")
+vim.keymap.set({"n","v"}, "<M-k>", "<C-u>zz")
 
 vim.keymap.set("n", "<leader>q", ":q<cr>")
 
