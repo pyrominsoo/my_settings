@@ -3,8 +3,7 @@ local lsp = require("lsp-zero")
 lsp.preset("recommended")
 
 lsp.ensure_installed({
-  'clangd',
-  'sumneko_lua',
+  'clangd'
 })
 
 local cmp = require('cmp')
@@ -30,17 +29,6 @@ cmp_mappings['<S-Tab>'] = nil
 lsp.setup_nvim_cmp({
   mapping = cmp_mappings
 })
-
-require'lspconfig'.sumneko_lua.setup {
-    settings = {
-        Lua = {
-            diagnostics = {
-                globals = { 'vim' }
-            }
-        }
-    }
-}
-
 
 lsp.set_preferences({
     suggest_lsp_servers = false,
