@@ -71,6 +71,8 @@ vim.keymap.set("n", "[g", ":lprevious<CR>")
 vim.keymap.set("n", "]g", ":lnext<CR>")
 vim.keymap.set("n", "[f", "<cmd>cprev<CR>zz")
 vim.keymap.set("n", "]f", "<cmd>cnext<CR>zz")
+vim.keymap.set("n", "[t", "<cmd>tabprev<CR>")
+vim.keymap.set("n", "]t", "<cmd>tabnext<CR>")
 
 vim.keymap.set("n", "<F2>", "i<CR><ESC>")
 vim.keymap.set("i", "<F2>", "<ESC>a<CR><ESC>")
