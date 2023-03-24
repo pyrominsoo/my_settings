@@ -59,3 +59,6 @@ vim.api.nvim_create_user_command(
 
 vim.cmd([[set grepprg=rg\ --vimgrep\ --no-heading]])
 vim.cmd([[set grepformat=%f:%l:%c:%m,%f:%l:%m]])
+
+-- disable autocomment
+vim.cmd([[autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o]])
