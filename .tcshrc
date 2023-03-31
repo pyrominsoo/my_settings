@@ -1,4 +1,6 @@
 
+set path=($path ~/.config/emacs/bin)
+
 setenv EDITOR 'nvim'
 
 alias gg "grep -rn"
