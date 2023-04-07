@@ -88,3 +88,4 @@ vim.keymap.set("n", "<leader>,nt", [[: -1read $HOME/.config/nvim/snippets/nvtarg
 vim.keymap.set("n", "<leader>,ti", [[: -1read $HOME/.config/nvim/snippets/tlminitsk.cpp<CR>]])
 vim.keymap.set("n", "<leader>,tt", [[: -1read $HOME/.config/nvim/snippets/tlmtargsk.cpp<CR>]])
 vim.keymap.set("n", "<leader>,sm", [[: -1read $HOME/.config/nvim/snippets/scmethod.cpp<CR>]])
+vim.keymap.set("n", "<leader>,dg", [[: -1read $HOME/.config/nvim/snippets/debug.cpp<CR>]])
