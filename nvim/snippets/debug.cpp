@@ -1,11 +1,12 @@
 #ifdef NDEBUG
+#define delog(x)
 #define debug(...)
 #else
 #include <iostream>
-#define debug(x, ...) logger(x, #__VA_ARGS__, __VA_ARGS__)
+#define delog(x) [](std::string str){ std::cout << str;}(x)
+#define debug(...) logger(#__VA_ARGS__, __VA_ARGS__)
 template <typename... Args>
-void logger(std::string str, std::string vars, Args&&... values) {
-    std::cout << str << ": ";
+void logger(std::string vars, Args&&... values) {
     std::cout << vars << " = ";
     std::string delim = "";
     (..., (std::cout << delim << values, delim = ", "));
