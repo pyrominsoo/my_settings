@@ -76,7 +76,6 @@ vim.keymap.set("n", "]t", "<cmd>tabnext<CR>")
 
 vim.keymap.set("n", "<F2>", "i<CR><ESC>")
 vim.keymap.set("i", "<F2>", "<ESC>a<CR><ESC>")
-vim.keymap.set("n", "<leader>wt", [[:.s/.*/===== \0 =====/<CR>]])
 
 vim.keymap.set("n", "<Backspace>", "<C-^>")
 
