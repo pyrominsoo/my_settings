@@ -27,6 +27,7 @@ vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 -- My own
 -- vim.keymap.set("i", "<S-Tab>", "<C-V><Tab>")
 -- vim.keymap.set("i", "jj", "<esc>")
+vim.keymap.set("i", "kj", "<esc>")
 
 vim.keymap.set("n", "<leader>wf", "<Plug>Vimwiki2HTML")
 vim.keymap.set("n", "<leader>wff", "<Plug>Vimwiki2HTMLBrowse")
