@@ -1,5 +1,6 @@
 require("moonguard.set")
 require("moonguard.remap")
+require("moonguard.abbr")
 
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
