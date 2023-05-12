@@ -5,10 +5,12 @@ NV_TargetSocket TARGSOCKET;
 std::queue<NV_Transaction*> TRANSQ;
 
 CONSTRUCT
-TARGSOCKET("SKNAME", SKID, this, NV_TCF(&ClassName::TARG_req_handler), MAXCMDS);
+TARGSOCKET("SKNAME", SKID, this, NV_TCF(&ClassName::TARG_REQ_HANDLER), MAXCMDS);
+SC_METHOD(SENDRESP);
+sensitive << SENDRESP_EVENT;
 
 CALLBACK
-NV_TransactionStatus TARG_req_handler(const unsigned int id,
+NV_TransactionStatus TARG_REQ_HANDLER(const unsigned int id,
                                            NV_Transaction& trans) {
     LG5("MSG");
     TRANSQ.push(&trans);

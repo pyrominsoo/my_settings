@@ -5,12 +5,11 @@ INCLUDES
 
 DEFINES
 tlm_utils::simple_initiator_socket<ClassName> ISOCKET;
-tlm_utils::peq_with_cb_and_phase<ClassName> PEQNAME;
-tlm::tlm_generic_payload TRANS;
+tlm_utils::peq_with_cb_and_phase<ClassName> INIT_PEQ_NAME;
 
 INITLIST
 ISOCKET("ISOCKET"),
-PEQNAME(this, &ClassName::peqCallback);
+INIT_PEQ_NAME(this, &ClassName::INIT_PEQ_CALLBACK);
 
 CONSTRUCTOR
 ISOCKET.register_nb_transport_bw(this, &ClassName::nb_transport_bw);
@@ -37,21 +36,15 @@ void sendFunc () {
     else { // TLM_UPDATED, TLM_COMPLETE
         SC_REPORT_ERROR("ClassName", "MSG");
     }
-    AT(!TRANS.is_response_error(), "Response error from b_transport");
-
-    ISOCKET->b_transport(TRANS, fw_delay);
-    if (trans->is_response_error() ) {
-        SC_REPORT_ERROR("TLM-2", "Response error from b_transport");
-    };
-    wait(socket_delay);
 }
+
 tlm_sync_enum ClassName::nb_transport_bw(tlm_generic_payload &payload,
                                            tlm_phase &phase, sc_time &bwDelay)
 {
-    PEQNAME.notify(payload, phase, bwDelay);
+    INIT_PEQ_NAME.notify(payload, phase, bwDelay);
     return TLM_ACCEPTED;
 }
-void ClassName::peqCallback(tlm_generic_payload &payload, const tlm_phase &phase)
+void ClassName::INIT_PEQ_CALLBACK(tlm_generic_payload &payload, const tlm_phase &phase)
 {
     if (phase == END_REQ) {
         // do something

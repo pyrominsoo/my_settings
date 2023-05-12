@@ -4,12 +4,11 @@ INCLUDES
 
 DEFINES
 tlm_utils::simple_target_socket<ClassName> TSOCKET;
-tlm_utils::peq_with_cb_and_phase<ClassName> PEQNAME;
-tlm::tlm_generic_payload TRANS;
+tlm_utils::peq_with_cb_and_phase<ClassName> TARG_PEQ_NAME;
 
 INITLIST
 TSOCKET("TSOCKET"),
-PEQNAME(this, &ClassName::peqCallback);
+TARG_PEQ_NAME(this, &ClassName::TARG_PEQ_CALLBACK);
 
 CONSTRUCTOR
 TSOCKET.register_nb_transport_fw(this, &ClassName::nb_transport_fw);
@@ -31,10 +30,10 @@ tlm_sync_enum ClassName::nb_transport_fw(tlm_generic_payload &payload,
                                            tlm_phase &phase, sc_time &bwDelay)
 {
     payload.acquire();
-    PEQNAME.notify(payload, phase, bwDelay);
+    TARG_PEQ_NAME.notify(payload, phase, bwDelay);
     return TLM_ACCEPTED;
 }
-void ClassName::peqCallback(tlm_generic_payload &payload, const tlm_phase &phase)
+void ClassName::TARG_PEQ_CALLBACK(tlm_generic_payload &payload, const tlm_phase &phase)
 {
     if (phase == BEGIN_REQ) {
         // do something
@@ -53,3 +52,4 @@ void ClassName::peqCallback(tlm_generic_payload &payload, const tlm_phase &phase
         SC_REPORT_FATAL("ClassName", "MSG");
     }
 }
+

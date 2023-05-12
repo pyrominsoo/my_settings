@@ -6,29 +6,34 @@ NV_InitiatorSocket::ReqContext REQCTX;
 
 CONSTRUCT
 INITSOCKET("NAME", ID, this);
+SC_METHOD(SENDFUNC);
+sensitive << SENDFUNC_EVENT;
 
 SEND
-REQCTX.delay = SC_ZERO_TIME;
-REQCTX.trans = NV::get_trans(TLM_WRITE_COMMAND, TRANSADDR, TRANSLEN,
-                             reinterpret_cast<unsigned char *>(DATA_PTR));
-REQCTX.cmpCb = NV_ICBF(&ClassName::INIT_resp_handler);
-REQCTX.latCb = NV_ILF(&ClassName::INIT_latency);
-REQCTX.taCb = NV_ITACBF(&ClassName::INIT_trans_accepted);
-INITSOCKET.send_req(&REQCTX);
+void SENDFUNC() {
+    REQCTX.delay = SC_ZERO_TIME;
+    REQCTX.trans =
+        NV::get_trans(TLM_WRITE_COMMAND, TRANSADDR, TRANSLEN,
+                      reinterpret_cast<unsigned char *>(DATA_PTR));
+    REQCTX.cmpCb = NV_ICBF(&ClassName::INIT_RESP_HANDLER);
+    REQCTX.latCb = NV_ILF(&ClassName::INIT_LATENCY);
+    REQCTX.taCb = NV_ITACBF(&ClassName::INIT_TRANS_ACCEPTED);
+    INITSOCKET.send_req(&REQCTX);
+}
 
 CALLBACK
-void initiator_response_handler(const unsigned int id,
+void INIT_RESP_HANDLER(const unsigned int id,
                                 NV_InitiatorSocket::ReqContext *req) {
   NV::free_trans(REQCTX.trans);
 }
 
-void initiator_trans_accepted(const unsigned int id,
+void INIT_TRANS_ACCEPTED(const unsigned int id,
                               NV_InitiatorSocket::ReqContext *req,
                               sc_core::sc_time delay) {
   // LG3("MSG")
 }
 
-sc_core::sc_time initiator_latency(const unsigned int id,
+sc_core::sc_time INIT_LATENCY(const unsigned int id,
                                    NV_InitiatorSocket::ReqContext *req,
                                    sc_core::sc_time delay) {
   // LG3("MSG")
