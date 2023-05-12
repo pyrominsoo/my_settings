@@ -1,3 +1,13 @@
+/*
+ * ----------------------------------------------------------------------
+ *        (c) copyright 2023. All rights reserved. Western Digital
+ *         Company confidential and proprietary information.
+ *  This information may not be disclosed to unauthorized individual.
+ * ----------------------------------------------------------------------
+ * @author: Min Soo Kim     min.soo.kim@wdc.com
+ * @date:   05/12/2023
+ */
+
 #ifndef NAVIS_MODULE_SNIPPET
 #define NAVIS_MODULE_SNIPPET
 
