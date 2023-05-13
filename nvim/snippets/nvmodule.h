@@ -11,14 +11,17 @@
 #ifndef NAVIS_MODULE_SNIPPET
 #define NAVIS_MODULE_SNIPPET
 
+#include <queue>
 #include <systemc>
 
 #include "infra/NV.h"
 
-class MODULENAME : public sc_module {
+using namespace sc_core;
+
+class ClassName : public sc_module {
    public:
-    /* SC_CTOR(MODULENAME) {} */
-    SC_HAS_PROCESS(MODULENAME);
+    /* SC_CTOR(ClassName) {} */
+    SC_HAS_PROCESS(ClassName);
 
     NV_InitiatorSocket INITSOCKET;
     NV_InitiatorSocket::ReqContext REQCTX;
@@ -26,7 +29,10 @@ class MODULENAME : public sc_module {
     NV_TargetSocket TARGSOCKET;
     std::queue<NV_Transaction *> TRANSQ;
 
-    MODULENAME(sc_module_name name)
+    sc_event SENDFUNC_EVENT;
+    sc_event SENDRESP_EVENT;
+
+    ClassName(sc_module_name name)
         : sc_module(name),
           INITSOCKET("NAME", ID, this),
           TARGSOCKET("SKNAME", SKID, this, NV_TCF(&ClassName::TARG_REQ_HANDLER),
@@ -41,7 +47,7 @@ class MODULENAME : public sc_module {
     void SENDFUNC() {
         REQCTX.delay = SC_ZERO_TIME;
         REQCTX.trans =
-            NV::get_trans(TLM_WRITE_COMMAND, TRANSADDR, TRANSLEN,
+            NV::get_trans(tlm::TLM_WRITE_COMMAND, TRANSADDR, TRANSLEN,
                           reinterpret_cast<unsigned char *>(DATA_PTR));
         REQCTX.cmpCb = NV_ICBF(&ClassName::INIT_RESP_HANDLER);
         REQCTX.latCb = NV_ILF(&ClassName::INIT_LATENCY);
