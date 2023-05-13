@@ -3,15 +3,18 @@
 DEFINE
 NV_TargetSocket TARGSOCKET;
 std::queue<NV_Transaction*> TRANSQ;
+sc_event SENDRESP_EVENT;
+
+INITIALIZE
+TARGSOCKET("SKNAME", SKID, this, NV_TCF(&ClassName::TARG_REQ_HANDLER), MAXCMDS),
 
 CONSTRUCT
-TARGSOCKET("SKNAME", SKID, this, NV_TCF(&ClassName::TARG_REQ_HANDLER), MAXCMDS);
 SC_METHOD(SENDRESP);
 sensitive << SENDRESP_EVENT;
 
 CALLBACK
 NV_TransactionStatus TARG_REQ_HANDLER(const unsigned int id,
-                                           NV_Transaction& trans) {
+                                      NV_Transaction &trans) {
     LG5("MSG");
     TRANSQ.push(&trans);
     SENDRESP_EVENT.notify(SOMEDELAY);
@@ -19,10 +22,10 @@ NV_TransactionStatus TARG_REQ_HANDLER(const unsigned int id,
 }
 
 void SENDRESP() {
-    NV_Transaction* currTrans = TRANSQ.front();
+    NV_Transaction *currTrans = TRANSQ.front();
     TRANSQ.pop();
-    DATATYPE* data_ptr =
-        reinterpret_cast<DATATYPE*>(currTrans->get_data_ptr());
+    DATATYPE *data_ptr =
+        reinterpret_cast<DATATYPE *>(currTrans->get_data_ptr());
     (*data_ptr) = SOMEDATA;
     TARGSOCKET.send_resp(*currTrans);
     LG5("MSG");
@@ -32,3 +35,4 @@ CONNECTION
 TARGSOCKET.set_clock_period(clockPeriod);
 TARGSOCKET.set_bus_width(4);
 INITSOCKET.bind(TARGETSK);
+

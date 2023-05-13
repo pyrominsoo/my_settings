@@ -60,13 +60,13 @@ class ClassName : public sc_module {
         NV::free_trans(REQCTX.trans);
     }
 
-    void INIT_LATENCY(const unsigned int id,
+    void INIT_TRANS_ACCEPTED(const unsigned int id,
                       NV_InitiatorSocket::ReqContext *req,
                       sc_core::sc_time delay) {
         // LG3("MSG")
     }
 
-    sc_core::sc_time INIT_TRANS_ACCEPTED(const unsigned int id,
+    sc_core::sc_time INIT_LATENCY(const unsigned int id,
                                          NV_InitiatorSocket::ReqContext *req,
                                          sc_core::sc_time delay) {
         // LG3("MSG")
