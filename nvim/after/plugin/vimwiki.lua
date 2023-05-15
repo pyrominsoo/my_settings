@@ -21,7 +21,7 @@ vim.keymap.set("n", "<leader>wz", FormatForZim)
 
 function SearchToday()
     local base = os.date('%Y-%m-%d')
-    local str = [[grep! "TODO .*]] .. base .. [["]]
+    local str = [[grep! "TODO .*<]] .. base .. [["]]
     vim.cmd(str)
     str = [[grepa! "\[ \] .*]] .. base .. [["]]
     vim.cmd(str)
@@ -31,12 +31,21 @@ end
 function SearchTomo()
     local timeshift = 24 * 60 * 60
     local base = os.date('%Y-%m-%d', os.time() + timeshift)
-    local str = [[grep! "TODO .*]] .. base .. [["]]
+    local str = [[grep! "TODO .*<]] .. base .. [["]]
     vim.cmd(str)
     str = [[grepa! "\[ \] .*]] .. base .. [["]]
     vim.cmd(str)
     vim.cmd("cw")
 end
 
+function SearchNodate()
+    local str = [[grep! "TODO .*<no"]]
+    vim.cmd(str)
+    str = [[grepa! "\[ \] .*<no"]]
+    vim.cmd(str)
+    vim.cmd("cw")
+end
+
 vim.keymap.set("n", "<leader>td", SearchToday)
 vim.keymap.set("n", "<leader>tm", SearchTomo)
+vim.keymap.set("n", "<leader>nd", SearchNodate)
