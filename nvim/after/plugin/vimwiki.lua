@@ -48,4 +48,4 @@ end
 
 vim.keymap.set("n", "<leader>td", SearchToday)
 vim.keymap.set("n", "<leader>tm", SearchTomo)
-vim.keymap.set("n", "<leader>nd", SearchNodate)
+vim.keymap.set("n", "<leader>tn", SearchNodate)
