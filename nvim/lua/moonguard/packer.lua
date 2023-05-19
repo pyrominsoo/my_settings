@@ -57,7 +57,12 @@ return require('packer').startup(function(use)
     use('vim-airline/vim-airline-themes')
     use('junegunn/vim-easy-align')
     use('tpope/vim-commentary')
-    use('vimwiki/vimwiki')
+    use {
+        'vimwiki/vimwiki',
+        config = function()
+            vim.g.vimwiki_conceallevel = 0
+        end
+    }
     use('majutsushi/tagbar')
     -- use('Raimondi/delimitMate')
     use({
