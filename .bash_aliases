@@ -34,6 +34,7 @@ alias chrome="google-chrome"
 alias sd="cd ~ && cd \$(find * -type d | fzf)"
 alias vd="cd ~ && cd \$(find * -type d | fzf) && nvim ."
 alias td="cd ~ && source .td"
+alias t="cd ~ && source .td"
 
 function cd {
     builtin cd "$@" && ls -F
