@@ -13,6 +13,7 @@ function FormatForZim()
     vim.cmd([[silent! %s/^= \(.\+\) =/FORMATFORZIM===== \1 =====/]])
     vim.cmd([[silent! %s/^FORMATFORZIM//]])
     vim.cmd("silent! %s/DONE/[*]/")
+    vim.cmd("silent! %s/PONE/[*]/")
     vim.cmd("silent! %s/TODO/[ ]/")
 end
 
