@@ -2,7 +2,7 @@ local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ts', '<cmd>Telescope<CR>', {})
 vim.keymap.set('n', '<leader>pf', builtin.find_files, {})
 vim.keymap.set('n', '<leader>ps', builtin.git_files, {})
-vim.keymap.set('n', '<leader>pt', builtin.tags, {})
+-- vim.keymap.set('n', '<leader>pt', builtin.tags, {})  // replaced with workspace_symbol
 vim.keymap.set('n', '<leader>ph', builtin.help_tags, {})
 vim.keymap.set('n', '<leader>pb', builtin.buffers, {})
 vim.keymap.set('n', '<leader>po', builtin.oldfiles, {})
