@@ -19,9 +19,6 @@ function FormatForZim()
     vim.cmd([[silent! %s/^FORMATFORZIM//]])
 end
 
-vim.keymap.set("n", "<leader>wt", vim.cmd.VimwikiTOC)
-vim.keymap.set("n", "<leader>wz", FormatForZim)
-
 function SearchToday()
     local base = os.date('%Y-%m-%d')
     local str = [[grep! "TODO .*<]] .. base .. [["]]
@@ -49,6 +46,20 @@ function SearchNodate()
     vim.cmd("cw")
 end
 
-vim.keymap.set("n", "<leader>td", SearchToday)
-vim.keymap.set("n", "<leader>tm", SearchTomo)
-vim.keymap.set("n", "<leader>tn", SearchNodate)
+local Moonguard_Vimwiki = vim.api.nvim_create_augroup("Moonguard_Vimwiki", {})
+
+local autocmd = vim.api.nvim_create_autocmd
+autocmd({"BufEnter", "BufWinEnter"}, {
+    group = Moonguard_Vimwiki,
+    pattern = "*.wiki",
+    callback = function()
+        vim.keymap.set("n", "<leader>wt", vim.cmd.VimwikiTOC)
+        vim.keymap.set("n", "<leader>wz", FormatForZim)
+
+        vim.keymap.set("n", "<leader>td", SearchToday)
+        vim.keymap.set("n", "<leader>tm", SearchTomo)
+        vim.keymap.set("n", "<leader>tn", SearchNodate)
+    end,
+})
+
+
