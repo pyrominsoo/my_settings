@@ -43,6 +43,8 @@ function SearchNodate()
     vim.cmd(str)
     str = [[grepa! "\[ \] .*<no"]]
     vim.cmd(str)
+    str = [[grepa! "TONO .*"]]
+    vim.cmd(str)
     vim.cmd("cw")
 end
 
