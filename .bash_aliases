@@ -25,6 +25,8 @@ alias youdlfs="yt-dlp -f 137+140"
 alias youdlF="yt-dlp -F"
 alias youdla="yt-dlp --extract-audio --audio-format mp3 --audio-quality 0"
 
+alias nhen="python3 ~/my_settings/scripts/nhendown.py"
+
 alias vi="nvim"
 alias v="vi ."
 
