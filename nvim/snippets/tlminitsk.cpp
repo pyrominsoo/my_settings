@@ -43,8 +43,8 @@ void SENDFUNC() {
 
 tlm::tlm_sync_enum nb_transport_bw(tlm::tlm_generic_payload &payload,
                                          tlm::tlm_phase &phase,
-                                         sc_time &bwDelay) {
-    INIT_PEQ_NAME.notify(payload, phase, bwDelay);
+                                         sc_time &bw_delay) {
+    INIT_PEQ_NAME.notify(payload, phase, bw_delay);
     return tlm::TLM_ACCEPTED;
 }
 

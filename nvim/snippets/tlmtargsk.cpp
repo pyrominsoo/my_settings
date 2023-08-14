@@ -28,9 +28,9 @@ void b_transport(tlm::tlm_generic_payload &trans, sc_time &delay) {
 
 tlm::tlm_sync_enum nb_transport_fw(tlm::tlm_generic_payload &payload,
                                          tlm::tlm_phase &phase,
-                                         sc_time &bwDelay) {
+                                         sc_time &fw_delay) {
     payload.acquire();
-    TARG_PEQ_NAME.notify(payload, phase, bwDelay);
+    TARG_PEQ_NAME.notify(payload, phase, fw_delay);
     return tlm::TLM_ACCEPTED;
 }
 
@@ -46,7 +46,7 @@ void TARG_PEQ_CALLBACK(tlm::tlm_generic_payload &payload,
         // Do something
         payload.release();
     } else {
-        SC_REPORT_FATAL("ClassName", "MSG");
+        SC_REPORT_FATAL("ClassName", "Invalid Phase");
     }
 }
 

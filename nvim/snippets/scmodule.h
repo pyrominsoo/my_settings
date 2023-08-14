@@ -20,9 +20,7 @@ using namespace sc_core;
 
 class ClassName : public sc_module {
    public:
-    /* SC_CTOR(ClassName) {} */
     SC_HAS_PROCESS(ClassName);
-
     ClassName(sc_module_name name)
         : sc_module(name) {
     }

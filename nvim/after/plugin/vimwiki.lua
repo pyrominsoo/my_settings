@@ -41,9 +41,9 @@ function SearchTomo()
 end
 
 function SearchNodate()
-    local str = [[grep! "TODO .*<no"]]
+    local str = [[grep! "TODO .*"]]
     vim.cmd(str)
-    str = [[grepa! "\[ \] .*<no"]]
+    str = [[grepa! "\[ \] .*"]]
     vim.cmd(str)
     str = [[grepa! "TONO .*"]]
     vim.cmd(str)
