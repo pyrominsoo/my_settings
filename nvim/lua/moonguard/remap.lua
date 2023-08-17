@@ -79,6 +79,7 @@ vim.keymap.set("n", "<F2>", "i<CR><ESC>")
 vim.keymap.set("i", "<F2>", "<ESC>a<CR><ESC>")
 
 vim.keymap.set("n", "<Backspace>", "<C-^>")
+vim.keymap.set("n", "<leader>rs", [[<cmd>%s/\s\+$//e<CR>]])
 
 vim.keymap.set("n", "<leader>,cl", [[: -1read $HOME/.config/nvim/snippets/class.cpp<CR>]])
 vim.keymap.set("n", "<leader>,cr", [[: -1read $HOME/.config/nvim/snippets/copyright.cpp<CR>]])

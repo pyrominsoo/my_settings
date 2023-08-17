@@ -4,7 +4,7 @@ require("moonguard.abbr")
 
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
-local MoonguardGroup = augroup('Moonguard', {})
+-- local MoonguardGroup = augroup('Moonguard', {})
 local yank_group = augroup('HighlightYank', {})
 
 function R(name)
@@ -22,11 +22,11 @@ autocmd('TextYankPost', {
     end,
 })
 
-autocmd({"BufWritePre"}, {
-    group = MoonguardGroup,
-    pattern = "*",
-    command = [[%s/\s\+$//e]],
-})
+-- autocmd({"BufWritePre"}, {
+--     group = MoonguardGroup,
+--     pattern = "*",
+--     command = [[%s/\s\+$//e]],
+-- })
 
 vim.cmd(':autocmd FileType qf wincmd J')
 vim.cmd('source ~/.config/nvim/netrw_mapping.vim')
