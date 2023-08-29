@@ -63,7 +63,7 @@ return require('packer').startup(function(use)
             vim.g.vimwiki_conceallevel = 0
         end
     }
-    use('majutsushi/tagbar')
+    -- use('majutsushi/tagbar')
     -- use('Raimondi/delimitMate')
     use({
         'tomasiser/vim-code-dark',
@@ -79,4 +79,8 @@ return require('packer').startup(function(use)
             vim.cmd('colorscheme tokyonight')
         end
     })
+    use {
+      'stevearc/aerial.nvim',
+      config = function() require('aerial').setup() end
+    }
 end)
