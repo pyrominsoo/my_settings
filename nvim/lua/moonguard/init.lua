@@ -28,6 +28,13 @@ autocmd('TextYankPost', {
 --     command = [[%s/\s\+$//e]],
 -- })
 
+autocmd('InsertLeave', {
+    pattern = '*',
+    callback = function()
+        vim.cmd('set nopaste')
+    end,
+})
+
 vim.cmd(':autocmd FileType qf wincmd J')
 vim.cmd('source ~/.config/nvim/netrw_mapping.vim')
 vim.cmd('source ~/.config/nvim/gdb.vim')
