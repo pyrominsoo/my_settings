@@ -38,6 +38,7 @@ autocmd('InsertLeave', {
 vim.cmd(':autocmd FileType qf wincmd J')
 vim.cmd('source ~/.config/nvim/netrw_mapping.vim')
 vim.cmd('source ~/.config/nvim/gdb.vim')
+vim.cmd('source ~/.config/nvim/quickfix.vim')
 
 vim.g.netrw_browse_split = 0
 vim.g.netrw_banner = 0
