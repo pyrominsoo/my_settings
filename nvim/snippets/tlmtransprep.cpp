@@ -1,0 +1,10 @@
+tlm::tlm_generic_payload* trans = trans_pool_.GetTrans();
+trans->acquire();
+trans->set_command(tlm::TLM_READ_COMMAND);
+trans->set_address(addrADPRAM);
+trans->set_data_ptr(reinterpret_cast<unsigned char *>(data_ptr));
+trans->set_data_length(data_size);
+trans->set_streaming_width(1);
+trans->set_byte_enable_ptr(0);
+trans->set_dmi_allowed(false);
+trans->set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
