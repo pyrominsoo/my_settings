@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cd `find * -type d | fzf`;
+cd `cat .dir_cache | fzf`;
 tmux new -A -s $(basename $PWD);

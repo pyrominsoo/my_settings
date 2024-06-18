@@ -33,8 +33,8 @@ alias v="vi ."
 alias chrome="google-chrome"
 
 # bash | zsh
-alias sd="cd ~ && cd \$(find * -type d | fzf)"
-alias vd="cd ~ && cd \$(find * -type d | fzf) && nvim ."
+alias sd="cd ~ && cd \$(cat .dir_cache | fzf)"
+alias vd="cd ~ && cd \$(cat .dir_cache | fzf) && nvim ."
 alias td="cd ~ && source .td"
 alias t="cd ~ && source .td"
 
