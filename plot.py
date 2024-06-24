@@ -8,17 +8,28 @@ min_point = 23702854340464
 # Create a figure and axis
 fig, ax = plt.subplots(figsize=(15, 8))
 
+x_min = 0
+y_min = 0
 x_max = 1024
-y_max = 1024
+y_max = 768
 x_width = 1
 y_width = 1
-ax.set_xlim(0, x_max+x_width)
-ax.set_ylim(0, y_max+y_width)
+ax.set_xlim(x_min, x_max+x_width)
+ax.set_ylim(y_min, y_max+y_width)
 
 
 class Point:
     def __init__(self, pos, color):
         self.pos = pos
+        self.color = color
+
+
+class Rectangle:
+    def __init__(self, xcoord, ycoord, width, height, color):
+        self.xcoord = xcoord
+        self.ycoord = ycoord
+        self.x_width = width
+        self.y_width = height
         self.color = color
 
 
@@ -47,7 +58,9 @@ class Entry:
         self.beta = int(fields[15])
         self.c = int(fields[16], 16) // byte_per_val
         self.ldc = int(fields[17])
-        if (min(self.a, self.b, self.c) < min_point):
+        minaddr = min(self.a, self.b, self.c)
+        if (minaddr < min_point):
+            print(minaddr)
             raise ValueError("Min address violated")
         self.a = self.a - min_point
         self.b = self.b - min_point
@@ -60,10 +73,14 @@ class Entry:
             color = 'c'
         else:
             raise ValueError("Unexpected self.layer value")
-        self.points_a = self.__ReturnPoints(
-            self.a // 4, self.lda,
+        self.rec_a = self.__ReturnRec(
+            self.a // byte_per_val, self.lda,
             (self.k if self.trans_a == "TransposeA" else self.m),
             (self.m if self.trans_a == "TransposeA" else self.k), color)
+        # self.points_a = self.__ReturnPoints(
+        #     self.a // 4, self.lda,
+        #     (self.k if self.trans_a == "TransposeA" else self.m),
+        #     (self.m if self.trans_a == "TransposeA" else self.k), color)
         if (self.layer == 0):
             color = 'r'
         elif (self.layer == 1):
@@ -72,23 +89,45 @@ class Entry:
             color = 'y'
         else:
             raise ValueError("Unexpected layer value")
-        self.points_b = self.__ReturnPoints(
-            self.b // 4, self.ldb,
+        self.rec_b = self.__ReturnRec(
+            self.b // byte_per_val, self.ldb,
             (self.n if self.trans_b == "TransposeB" else self.k),
             (self.k if self.trans_b == "TransposeB" else self.n), color)
+        # self.points_b = self.__ReturnPoints(
+        #     self.b // 4, self.ldb,
+        #     (self.n if self.trans_b == "TransposeB" else self.k),
+        #     (self.k if self.trans_b == "TransposeB" else self.n), color)
         color = 'k'
-        self.points_c = self.__ReturnPoints(
-            self.c // 4, self.ldc, self.m, self.n, color)
-        self.points = self.points_a + self.points_b + self.points_c
+        self.rec_c = self.__ReturnRec(
+            self.c // byte_per_val, self.ldc, self.m, self.n, color)
+        # self.points_c = self.__ReturnPoints(
+        #     self.c // 4, self.ldc, self.m, self.n, color)
+        self.rec = self.rec_a + self.rec_b + self.rec_c
 
     def __ReturnPoints(self, begin_point, ld, param1, param2, color):
         retlist = []
         pos = begin_point
-        # retlist.append(Point(pos, color))
         for j in range(0, param2):
             for i in range(0, param1):
                 retlist.append(Point(pos, color))
                 pos += 1
+            pos += ld
+        return retlist
+
+    def __ReturnRec(self, begin_point, ld, param1, param2, color):
+        retlist = []
+        pos = begin_point
+        for j in range(0, param2):
+            xcoord = pos // y_max
+            ycoord = pos % y_max
+            width = x_width
+            height = y_width * param1
+            diff = (height + ycoord) - (y_max + y_width)
+            while diff > 0:
+                height = height - diff
+                retlist.append(
+                    Rectangle(xcoord, 0, width, max(diff, height), color))
+            retlist.append(Rectangle(xcoord, ycoord, width, height, color))
             pos += ld
         return retlist
 
@@ -101,14 +140,11 @@ with open('trace', 'r') as f:
 for entry in trace:
     fields = entry.strip().split()
     curr_entry = Entry(fields)
-    for point in curr_entry.points:
-        pos = point.pos
-        xcoord = pos // y_max
-        ycoord = pos % y_max
-        sq = patches.Rectangle((xcoord, ycoord), x_width,
-                               y_width, fill=True, color=point.color)
+    for rec in curr_entry.rec:
+        sq = patches.Rectangle((rec.xcoord, rec.ycoord), rec.x_width,
+                               rec.y_width, fill=True, color=rec.color)
         ax.add_patch(sq)
-    plt.pause(0.2)
+    plt.pause(0.1)
 
 # # Get an array of memory addresses
 # addresses = np.random.randint(0, 1000, size=100)
