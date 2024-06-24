@@ -3,19 +3,20 @@ import matplotlib.patches as patches
 
 byte_per_val = 4
 # Initialize min and max memory addresses
-min_point = 23702854340464
-
+# min_point = 23702854340464
+min_point = 23702853431056
 # Create a figure and axis
-fig, ax = plt.subplots(figsize=(15, 8))
+fig, ax = plt.subplots(figsize=(16, 8))
 
 x_min = 0
 y_min = 0
-x_max = 1024
+x_max = 16384
+# x_max = 64
 y_max = 768
 x_width = 1
 y_width = 1
-ax.set_xlim(x_min, x_max+x_width)
-ax.set_ylim(y_min, y_max+y_width)
+ax.set_xlim(x_min, x_max)
+ax.set_ylim(y_min, y_max)
 
 
 class Point:
@@ -65,11 +66,11 @@ class Entry:
         self.a = self.a - min_point
         self.b = self.b - min_point
         self.c = self.c - min_point
-        if (self.layer == 0):
+        if (self.layer == 1):
             color = 'b'
-        elif (self.layer == 1):
-            color = 'g'
         elif (self.layer == 2):
+            color = 'g'
+        elif (self.layer == 0):
             color = 'c'
         else:
             raise ValueError("Unexpected self.layer value")
@@ -81,11 +82,11 @@ class Entry:
         #     self.a // 4, self.lda,
         #     (self.k if self.trans_a == "TransposeA" else self.m),
         #     (self.m if self.trans_a == "TransposeA" else self.k), color)
-        if (self.layer == 0):
+        if (self.layer == 1):
             color = 'r'
-        elif (self.layer == 1):
-            color = 'm'
         elif (self.layer == 2):
+            color = 'm'
+        elif (self.layer == 0):
             color = 'y'
         else:
             raise ValueError("Unexpected layer value")
@@ -121,19 +122,22 @@ class Entry:
             xcoord = pos // y_max
             ycoord = pos % y_max
             width = x_width
-            height = y_width * param1
-            diff = (height + ycoord) - (y_max + y_width)
-            while diff > 0:
-                height = height - diff
+            size = y_width * param1
+            while size + ycoord > y_max:
+                height = y_max - ycoord
                 retlist.append(
-                    Rectangle(xcoord, 0, width, max(diff, height), color))
-            retlist.append(Rectangle(xcoord, ycoord, width, height, color))
+                    Rectangle(xcoord, ycoord,
+                              width, height, color))
+                xcoord += x_width
+                ycoord = 0
+                size = size - height
+            retlist.append(Rectangle(xcoord, ycoord, width, size, color))
             pos += ld
         return retlist
 
 
 # Read file
-with open('trace', 'r') as f:
+with open('trace.txt', 'r') as f:
     trace = f.readlines()
 
 
