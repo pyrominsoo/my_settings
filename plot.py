@@ -3,20 +3,23 @@ import matplotlib.patches as patches
 
 byte_per_val = 4
 # Initialize min and max memory addresses
-# min_point = 23702854340464
-min_point = 23702853431056
-# Create a figure and axis
+min_point = 23702854340464
+# min_point = 23702853431056
+
 fig, ax = plt.subplots(figsize=(16, 8))
 
 x_min = 0
 y_min = 0
-x_max = 16384
-# x_max = 64
+# x_max = 32768
+x_max = 128
 y_max = 768
 x_width = 1
 y_width = 1
 ax.set_xlim(x_min, x_max)
 ax.set_ylim(y_min, y_max)
+# plt.axis('off')
+# ax.axis([0, y_max+1, 0, x_max+1])
+# plt.grid(which='major', color='b', linestyle='-')
 
 
 class Point:
@@ -75,13 +78,9 @@ class Entry:
         else:
             raise ValueError("Unexpected self.layer value")
         self.rec_a = self.__ReturnRec(
-            self.a // byte_per_val, self.lda,
+            self.a, self.lda,
             (self.k if self.trans_a == "TransposeA" else self.m),
             (self.m if self.trans_a == "TransposeA" else self.k), color)
-        # self.points_a = self.__ReturnPoints(
-        #     self.a // 4, self.lda,
-        #     (self.k if self.trans_a == "TransposeA" else self.m),
-        #     (self.m if self.trans_a == "TransposeA" else self.k), color)
         if (self.layer == 1):
             color = 'r'
         elif (self.layer == 2):
@@ -91,18 +90,12 @@ class Entry:
         else:
             raise ValueError("Unexpected layer value")
         self.rec_b = self.__ReturnRec(
-            self.b // byte_per_val, self.ldb,
+            self.b, self.ldb,
             (self.n if self.trans_b == "TransposeB" else self.k),
             (self.k if self.trans_b == "TransposeB" else self.n), color)
-        # self.points_b = self.__ReturnPoints(
-        #     self.b // 4, self.ldb,
-        #     (self.n if self.trans_b == "TransposeB" else self.k),
-        #     (self.k if self.trans_b == "TransposeB" else self.n), color)
         color = 'k'
         self.rec_c = self.__ReturnRec(
-            self.c // byte_per_val, self.ldc, self.m, self.n, color)
-        # self.points_c = self.__ReturnPoints(
-        #     self.c // 4, self.ldc, self.m, self.n, color)
+            self.c, self.ldc, self.m, self.n, color)
         self.rec = self.rec_a + self.rec_b + self.rec_c
 
     def __ReturnPoints(self, begin_point, ld, param1, param2, color):
@@ -123,15 +116,25 @@ class Entry:
             ycoord = pos % y_max
             width = x_width
             size = y_width * param1
-            while size + ycoord > y_max:
-                height = y_max - ycoord
+            if size + ycoord > y_max:
+                # First rectangle
+                height = (y_max - ycoord) * y_width
                 retlist.append(
                     Rectangle(xcoord, ycoord,
                               width, height, color))
                 xcoord += x_width
                 ycoord = 0
                 size = size - height
-            retlist.append(Rectangle(xcoord, ycoord, width, size, color))
+                # middle rectangle
+                num_full = size // y_max
+                retlist.append(
+                    Rectangle(xcoord, ycoord,
+                              num_full * x_width, y_max * y_width, color))
+                xcoord += x_width * num_full
+                ycoord = 0
+                size = size - (y_max * num_full)
+            retlist.append(
+                Rectangle(xcoord, ycoord, width, size * y_width, color))
             pos += ld
         return retlist
 
@@ -139,7 +142,6 @@ class Entry:
 # Read file
 with open('trace.txt', 'r') as f:
     trace = f.readlines()
-
 
 for entry in trace:
     fields = entry.strip().split()
@@ -150,11 +152,6 @@ for entry in trace:
         ax.add_patch(sq)
     plt.pause(0.1)
 
-# # Get an array of memory addresses
-# addresses = np.random.randint(0, 1000, size=100)
+f.close()
 
-
-# ax.axis([0, y_max+1, 0, x_max+1])
-plt.axis('off')
-# plt.grid(b=True, which='major', color='b', linestyle='-')
 plt.show()
