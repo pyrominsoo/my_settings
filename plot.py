@@ -6,12 +6,12 @@ byte_per_val = 4
 min_point = 23702854340464
 # min_point = 23702853431056
 
-fig, ax = plt.subplots(figsize=(16, 8))
+fig, ax = plt.subplots(figsize=(12, 6))
 
 x_min = 0
 y_min = 0
-# x_max = 32768
-x_max = 128
+x_max = 32768
+# x_max = 128
 y_max = 768
 x_width = 1
 y_width = 1
@@ -142,6 +142,7 @@ class Entry:
 # Read file
 with open('trace.txt', 'r') as f:
     trace = f.readlines()
+
 
 for entry in trace:
     fields = entry.strip().split()
