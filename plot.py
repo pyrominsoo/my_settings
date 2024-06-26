@@ -3,15 +3,21 @@ import matplotlib.patches as patches
 
 byte_per_val = 4
 # Initialize min and max memory addresses
-min_point = 23702854340464
-# min_point = 23702853431056
+# min_point = 23702854340464
+min_point = 23702853431056  # 158EC028AF10
+
 
 fig, ax = plt.subplots(figsize=(12, 6))
 
+enable_result = True
+enable_activation = True
 x_min = 0
 y_min = 0
-x_max = 32768
+x_max = 65536 * 2
+# x_max = 65536
+# x_max = 32768
 # x_max = 128
+
 y_max = 768
 x_width = 1
 y_width = 1
@@ -81,21 +87,30 @@ class Entry:
             self.a, self.lda,
             (self.k if self.trans_a == "TransposeA" else self.m),
             (self.m if self.trans_a == "TransposeA" else self.k), color)
-        if (self.layer == 1):
-            color = 'r'
-        elif (self.layer == 2):
-            color = 'm'
-        elif (self.layer == 0):
-            color = 'y'
+
+        if enable_activation:
+            if (self.layer == 1):
+                color = 'r'
+            elif (self.layer == 2):
+                color = 'm'
+            elif (self.layer == 0):
+                color = 'y'
+            else:
+                raise ValueError("Unexpected layer value")
+            self.rec_b = self.__ReturnRec(
+                self.b, self.ldb,
+                (self.n if self.trans_b == "TransposeB" else self.k),
+                (self.k if self.trans_b == "TransposeB" else self.n), color)
         else:
-            raise ValueError("Unexpected layer value")
-        self.rec_b = self.__ReturnRec(
-            self.b, self.ldb,
-            (self.n if self.trans_b == "TransposeB" else self.k),
-            (self.k if self.trans_b == "TransposeB" else self.n), color)
-        color = 'k'
-        self.rec_c = self.__ReturnRec(
-            self.c, self.ldc, self.m, self.n, color)
+            self.rec_b = []
+
+        if enable_result:
+            color = 'k'
+            self.rec_c = self.__ReturnRec(
+                self.c, self.ldc, self.m, self.n, color)
+        else:
+            self.rec_c = []
+
         self.rec = self.rec_a + self.rec_b + self.rec_c
 
     def __ReturnPoints(self, begin_point, ld, param1, param2, color):
@@ -111,21 +126,22 @@ class Entry:
     def __ReturnRec(self, begin_point, ld, param1, param2, color):
         retlist = []
         pos = begin_point
-        for j in range(0, param2):
+
+        if (param1 == ld):
             xcoord = pos // y_max
             ycoord = pos % y_max
-            width = x_width
-            size = y_width * param1
+            size = y_width * (param1 * param2)
             if size + ycoord > y_max:
                 # First rectangle
-                height = (y_max - ycoord) * y_width
-                retlist.append(
-                    Rectangle(xcoord, ycoord,
-                              width, height, color))
-                xcoord += x_width
-                ycoord = 0
-                size = size - height
-                # middle rectangle
+                if ycoord != 0:
+                    height = (y_max - ycoord) * y_width
+                    retlist.append(
+                        Rectangle(xcoord, ycoord,
+                                  x_width, height, color))
+                    xcoord += x_width
+                    ycoord = 0
+                    size = size - height
+                # Middle rectangle
                 num_full = size // y_max
                 retlist.append(
                     Rectangle(xcoord, ycoord,
@@ -133,9 +149,38 @@ class Entry:
                 xcoord += x_width * num_full
                 ycoord = 0
                 size = size - (y_max * num_full)
-            retlist.append(
-                Rectangle(xcoord, ycoord, width, size * y_width, color))
-            pos += ld
+            # Last rectangle
+            if size > 0:
+                retlist.append(
+                    Rectangle(xcoord, ycoord, x_width, size * y_width, color))
+        else:
+            for j in range(0, param2):
+                xcoord = pos // y_max
+                ycoord = pos % y_max
+                width = x_width
+                size = y_width * param1
+                if size + ycoord > y_max:
+                    # First rectangle
+                    if ycoord != 0:
+                        height = (y_max - ycoord) * y_width
+                        retlist.append(
+                            Rectangle(xcoord, ycoord,
+                                      width, height, color))
+                        xcoord += x_width
+                        ycoord = 0
+                        size = size - height
+                    # middle rectangle
+                    num_full = size // y_max
+                    retlist.append(
+                        Rectangle(xcoord, ycoord,
+                                  num_full * x_width, y_max * y_width, color))
+                    xcoord += x_width * num_full
+                    ycoord = 0
+                    size = size - (y_max * num_full)
+                if size > 0:
+                    retlist.append(
+                        Rectangle(xcoord, ycoord, width, size * y_width, color))
+                pos += ld
         return retlist
 
 
@@ -151,8 +196,9 @@ for entry in trace:
         sq = patches.Rectangle((rec.xcoord, rec.ycoord), rec.x_width,
                                rec.y_width, fill=True, color=rec.color)
         ax.add_patch(sq)
-    plt.pause(0.1)
+    plt.pause(0.001)
 
+print("Done")
 f.close()
 
 plt.show()
