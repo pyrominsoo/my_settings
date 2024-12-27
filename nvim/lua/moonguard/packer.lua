@@ -79,6 +79,13 @@ return require('packer').startup(function(use)
             vim.cmd('colorscheme tokyonight')
         end
     })
+    use({
+        'navarasu/onedark.nvim',
+        as = 'onedark',
+        config = function()
+            vim.cmd('colorscheme onedark')
+        end
+    })
     use {
       'stevearc/aerial.nvim',
       config = function() require('aerial').setup() end
