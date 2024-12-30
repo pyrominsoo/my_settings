@@ -1,10 +1,10 @@
 
 vim.cmd.hi([[VimwikiHeader1 guifg=#FF0000]])
 vim.cmd.hi([[VimwikiHeader2 guifg=#FF00FF]])
-vim.cmd.hi([[VimwikiHeader3 guifg=#FFFF00]])
+vim.cmd.hi([[VimwikiHeader3 guifg=#0000FF]])
 vim.cmd.hi([[VimwikiHeader4 guifg=#00FF00]])
 vim.cmd.hi([[VimwikiHeader5 guifg=#00FFFF]])
-vim.cmd.hi([[VimwikiHeader6 guifg=#0000FF]])
+vim.cmd.hi([[VimwikiHeader6 guifg=#FFFF00]])
 
 function FormatForZim()
     vim.cmd([[silent! %s/^===== \(.\+\) =====/FORMATFORZIM= \1 =/]])
