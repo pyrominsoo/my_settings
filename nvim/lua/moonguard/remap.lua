@@ -84,6 +84,7 @@ vim.keymap.set("n", "<leader>,cr", [[: -1read $HOME/.config/nvim/snippets/copyri
 vim.keymap.set("n", "<leader>,it", [[: -1read $HOME/.config/nvim/snippets/for_iter.cpp<CR>]])
 vim.keymap.set("n", "<leader>,ni", [[: -1read $HOME/.config/nvim/snippets/nvinitsk.cpp<CR>]])
 vim.keymap.set("n", "<leader>,nt", [[: -1read $HOME/.config/nvim/snippets/nvtargsk.cpp<CR>]])
+vim.keymap.set("n", "<leader>,tl", [[: -1read $HOME/.config/nvim/snippets/template.cpp<CR>]])
 vim.keymap.set("n", "<leader>,ti", [[: -1read $HOME/.config/nvim/snippets/tlminitsk.cpp<CR>]])
 vim.keymap.set("n", "<leader>,tt", [[: -1read $HOME/.config/nvim/snippets/tlmtargsk.cpp<CR>]])
 vim.keymap.set("n", "<leader>,tr", [[: -1read $HOME/.config/nvim/snippets/tlmtransprep.cpp<CR>]])
