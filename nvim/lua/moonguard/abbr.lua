@@ -198,7 +198,7 @@ end, {
   desc = "Copy file from given path to $CURR_DIR/$SUBDIR and insert link as [[./filename]] or [[./filename_N.ext]]"
 })
 
-vim.keymap.set('n', '<leader>;a', ':Attach ', { noremap = true })
-vim.keymap.set('n', '<leader>;b', ':Bttach ', { noremap = true })
-vim.keymap.set('n', '<leader>;c', ':Cttach ', { noremap = true })
+vim.keymap.set('n', '<leader>;a', ':Attach ~/Down', { noremap = true })
+vim.keymap.set('n', '<leader>;b', ':Bttach ~/Down', { noremap = true })
+vim.keymap.set('n', '<leader>;c', ':Cttach ~/Down', { noremap = true })
 
