@@ -1,5 +1,4 @@
 vim.cmd('iab <expr> dts strftime("%F")')
-vim.cmd('iab [] [ ]')
 
 vim.api.nvim_create_user_command("Attach", function(opts)
   local src = vim.fn.expand(opts.args) -- Accept full path, expand ~ etc.
