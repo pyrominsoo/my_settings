@@ -40,12 +40,23 @@ local function insert_at_cursor(str)
   end
 end
 
--- Map <leader>h1 to <leader>h5
-for i = 1, 5 do
-  local eqs = string.rep("=", i)
-  local str = eqs .. " temp " .. eqs
-  vim.keymap.set({'n', 'i'}, "<leader>h" .. i, function() insert_at_cursor(str) end, { noremap = true, silent = true, desc = "Insert " .. str })
+
+-- Helper: decorate N times
+local function decorate_n_times(n)
+  for _ = 1, n do
+    decorate_line_with_equals()
+  end
 end
+
+for i = 1, 5 do
+  vim.keymap.set('n', '<leader>h'..i, function() decorate_n_times(i) end, { noremap = true, silent = true, desc = "Decorate line with "..i.." =" })
+  vim.keymap.set('i', '<leader>h'..i, function()
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Esc>', true, false, true), 'n', false)
+    decorate_n_times(i)
+    vim.api.nvim_feedkeys('A', 'n', false) -- Return to insert mode at end of line
+  end, { noremap = true, silent = true, desc = "Decorate line with "..i.." =" })
+end
+
 
 vim.keymap.set('n', '=', decorate_line_with_equals, { noremap = true, silent = true })
 vim.keymap.set('n', '-', reduce_equals_decoration, { noremap = true, silent = true })
