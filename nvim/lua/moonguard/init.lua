@@ -138,3 +138,21 @@ vim.keymap.set('n', '<leader>;t', function()
   end)
 end, { desc = "Create new task" })
 
+vim.keymap.set('n', '<leader>;h', function()
+  -- Get current file name without extension
+  local filename = vim.fn.expand("%:t:r")
+  -- ISO 8601 date/time with timezone
+  local datetime = os.date("%Y-%m-%dT%H:%M:%S") .. "-07:00"
+  -- "Created" line, e.g., "Created Friday 04 July 2025"
+  local created = os.date("Created %A %d %B %Y")
+  local header = string.format(
+    "Content-Type: text/x-zim-wiki\nWiki-Format: zim 0.6\nCreation-Date: %s",
+    datetime
+  )
+  local lines = vim.split(header, "\n")
+  table.insert(lines, "")  -- blank line
+  table.insert(lines, string.format("====== %s ======", filename))
+  table.insert(lines, created)
+  vim.api.nvim_put(lines, "c", true, true)
+end, { desc = "Insert Zim Wiki header and section with filename" })
+
