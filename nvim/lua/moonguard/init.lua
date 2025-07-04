@@ -77,9 +77,7 @@ vim.cmd([[autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatop
 
 function SearchToday()
     local base = os.date('%Y-%m-%d')
-    local str = [[grep! "TODO .*<]] .. base .. [["]]
-    vim.cmd(str)
-    str = [[grepa! "\[ \] .*]] .. base .. [["]]
+    str = [[grep! "\[ \] .*]] .. base .. [["]]
     vim.cmd(str)
     vim.cmd("cw")
 end
@@ -87,19 +85,13 @@ end
 function SearchTomo()
     local timeshift = 24 * 60 * 60
     local base = os.date('%Y-%m-%d', os.time() + timeshift)
-    local str = [[grep! "TODO .*<]] .. base .. [["]]
-    vim.cmd(str)
-    str = [[grepa! "\[ \] .*]] .. base .. [["]]
+    str = [[grep! "\[ \] .*]] .. base .. [["]]
     vim.cmd(str)
     vim.cmd("cw")
 end
 
 function SearchNodate()
-    local str = [[grep! "TODO .*"]]
-    vim.cmd(str)
-    str = [[grepa! "\[ \] .*"]]
-    vim.cmd(str)
-    str = [[grepa! "TONO .*"]]
+    str = [[grep! "\[ \] .*"]]
     vim.cmd(str)
     vim.cmd("cw")
 end
