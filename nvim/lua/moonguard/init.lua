@@ -117,3 +117,24 @@ autocmd({"BufEnter", "BufWinEnter"}, {
     end,
 })
 
+-- Function to create a task at the cursor
+local function CreateTask(sentence)
+  local date = os.date("%Y-%m-%d")
+  local task = string.format("[ ] %s <%s", sentence, date)
+  vim.api.nvim_put({task}, "c", true, true)
+end
+
+-- User command: :CreateTask Your task here
+vim.api.nvim_create_user_command("Task", function(opts)
+  CreateTask(opts.args)
+end, { nargs = "+" })
+
+-- Keymap: <leader>;t prompts for a task and inserts it
+vim.keymap.set('n', '<leader>;t', function()
+  vim.ui.input({ prompt = "Task: " }, function(input)
+    if input and #input > 0 then
+      CreateTask(input)
+    end
+  end)
+end, { desc = "Create new task" })
+
