@@ -50,11 +50,6 @@ end
 
 for i = 1, 5 do
   vim.keymap.set('n', '<leader>h'..i, function() decorate_n_times(i) end, { noremap = true, silent = true, desc = "Decorate line with "..i.." =" })
-  vim.keymap.set('i', '<leader>h'..i, function()
-    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Esc>', true, false, true), 'n', false)
-    decorate_n_times(i)
-    vim.api.nvim_feedkeys('A', 'n', false) -- Return to insert mode at end of line
-  end, { noremap = true, silent = true, desc = "Decorate line with "..i.." =" })
 end
 
 
