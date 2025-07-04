@@ -93,3 +93,16 @@ vim.keymap.set("n", "<leader>,md", [[: -1read $HOME/.config/nvim/snippets/scmeth
 vim.keymap.set("n", "<leader>,dg", [[: -1read $HOME/.config/nvim/snippets/debug.cpp<CR>]])
 vim.keymap.set("n", "<leader>,nm", [[: -1read $HOME/.config/nvim/snippets/nvmodule.h<CR>]])
 vim.keymap.set("n", "<leader>,sm", [[: -1read $HOME/.config/nvim/snippets/scmodule.h<CR>]])
+
+vim.keymap.set('n', '<leader>;x', function()
+  local line = vim.api.nvim_get_current_line()
+  local new_line
+  if line:find("%[%s%]") then
+    new_line = line:gsub("%[%s%]", "[*]", 1)
+  elseif line:find("%[%*%]") then
+    new_line = line:gsub("%[%*%]", "[ ]", 1)
+  else
+    return  -- nothing to toggle
+  end
+  vim.api.nvim_set_current_line(new_line)
+end, { noremap = true, silent = true, desc = "Toggle [ ] and [*] on current line" })
