@@ -1,4 +1,5 @@
 require("moonguard.set")
+require("moonguard.headers")
 require("moonguard.remap")
 require("moonguard.abbr")
 
