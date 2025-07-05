@@ -148,3 +148,76 @@ vim.keymap.set('n', '<leader>;h', function()
   vim.api.nvim_put(lines, "c", true, true)
 end, { desc = "Insert Zim Wiki header and section with filename" })
 
+
+
+
+-- Function to open a file with the default system application
+local function open_with_default(filepath)
+  vim.fn.jobstart({'xdg-open', filepath}, {detach = true})
+end
+
+-- Helper: Open a file with the system default application
+local function open_with_default(filepath)
+  vim.fn.jobstart({'xdg-open', filepath}, {detach = true})
+end
+
+-- Helper: Open a file with the system default application
+local function open_with_default(filepath)
+  vim.fn.jobstart({'xdg-open', filepath}, {detach = true})
+end
+
+
+-- Helper: Open a file with the system default application
+local function open_with_default(filepath)
+  vim.fn.jobstart({'xdg-open', filepath}, {detach = true})
+end
+
+
+-- Helper: Open a file with the system default application
+local function open_with_default(filepath)
+  vim.fn.jobstart({'xdg-open', filepath}, {detach = true})
+end
+
+local function open_delimited_filename()
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local line = vim.api.nvim_get_current_line()
+  local cursor_pos = col + 1 -- Lua strings are 1-based
+
+  -- Patterns for [[FILENAME]] and {{FILENAME}}
+  local patterns = {
+    {pattern = "%[%[(.-)%]%]",   len_open = 2, len_close = 2},
+    {pattern = "%{%{(.-)%}%}",   len_open = 2, len_close = 2},
+  }
+
+  for _, pat in ipairs(patterns) do
+    local search_start = 1
+    while true do
+      local s, e, fname = string.find(line, pat.pattern, search_start)
+      if not s then break end
+      if cursor_pos >= s and cursor_pos <= e then
+        -- Get the current file's directory and name (without extension)
+        local currfile = vim.api.nvim_buf_get_name(0)
+        local currdir = vim.fn.fnamemodify(currfile, ":h")
+        local name_no_ext = vim.fn.fnamemodify(currfile, ":t:r")
+
+        -- Expand FILENAME if it starts with ./
+        local expanded
+        if fname:sub(1,2) == "./" then
+          expanded = currdir .. "/" .. name_no_ext .. "/" .. fname:sub(3)
+        else
+          expanded = fname
+        end
+
+        open_with_default(expanded)
+        return
+      end
+      search_start = e + 1
+    end
+  end
+
+  vim.notify("No [[FILENAME]] or {{FILENAME}} under cursor", vim.log.levels.ERROR)
+end
+
+-- Key mapping: <leader>;o in normal mode
+vim.keymap.set('n', '<leader>;o', open_delimited_filename, { noremap = true, silent = true, desc = "Open [[FILENAME]] or {{FILENAME}} under cursor" })
+
