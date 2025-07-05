@@ -150,25 +150,9 @@ end, { desc = "Insert Zim Wiki header and section with filename" })
 
 
 
-
-
-
-
--- Helper: Detect if running in WSL
-local function is_wsl()
-  local ok, output = pcall(function()
-    return vim.fn.readfile("/proc/version")[1]
-  end)
-  return ok and output and output:match("Microsoft") ~= nil
-end
-
 -- Helper: Open a file with the system default application
 local function open_with_default(filepath)
-  if is_wsl() and vim.fn.executable("wslview") == 1 then
-    vim.fn.jobstart({'wslview', filepath}, {detach = true})
-  else
-    vim.fn.jobstart({'xdg-open', filepath}, {detach = true})
-  end
+  vim.fn.jobstart({'wslview', filepath}, {detach = true})
 end
 
 -- Main function for <leader>;o
@@ -289,21 +273,10 @@ end
 vim.keymap.set('n', '<leader>;d', DeleteFile, { noremap = true, silent = true, desc = "Delete file under [[FILENAME]] or {{FILENAME}} and remove the pattern" })
 
 
-
-
--- Assumes is_wsl() is already defined elsewhere in your config
-
 -- Helper: Open a directory with the system default file explorer
 local function open_directory(dirpath)
-  if is_wsl() and vim.fn.executable("wslview") == 1 then
-    vim.fn.jobstart({'wslview', dirpath}, {detach = true})
-    vim.notify("Opened directory with wslview: " .. dirpath, vim.log.levels.INFO)
-  elseif vim.fn.executable("xdg-open") == 1 then
-    vim.fn.jobstart({'xdg-open', dirpath}, {detach = true})
-    vim.notify("Opened directory with xdg-open: " .. dirpath, vim.log.levels.INFO)
-  else
-    vim.notify("Neither wslview nor xdg-open is available to open the directory.", vim.log.levels.ERROR)
-  end
+  vim.fn.jobstart({'wslview', dirpath}, {detach = true})
+  vim.notify("Opened directory with wslview: " .. dirpath, vim.log.levels.INFO)
 end
 
 local function open_current_file_dir()
