@@ -226,3 +226,103 @@ vim.keymap.set('n', '<leader>;f', function()
   vim.cmd('cw')
 end, { noremap = true, silent = true, desc = "List all [[FILENAME]] and {{FILENAME}} in quickfix" })
 
+
+
+
+
+local function DeleteFile()
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local line = vim.api.nvim_get_current_line()
+  local cursor_pos = col + 1 -- Lua strings are 1-based
+
+  -- Patterns for [[FILENAME]] and {{FILENAME}}
+  local patterns = {
+    {pattern = "%[%[(.-)%]%]"},
+    {pattern = "%{%{(.-)%}%}"},
+  }
+
+  for _, pat in ipairs(patterns) do
+    local search_start = 1
+    while true do
+      local s, e, fname = string.find(line, pat.pattern, search_start)
+      if not s then break end
+      if cursor_pos >= s and cursor_pos <= e then
+        -- Get the current file's directory and name (without extension)
+        local currfile = vim.api.nvim_buf_get_name(0)
+        local currdir = vim.fn.fnamemodify(currfile, ":h")
+        local name_no_ext = vim.fn.fnamemodify(currfile, ":t:r")
+
+        -- Expand FILENAME if it starts with ./ or .\
+        local expanded = fname
+        if fname:sub(1,2) == "./" or fname:sub(1,2) == ".\\" then
+          expanded = currdir .. "/" .. name_no_ext .. "/" .. fname:sub(3)
+        end
+
+        -- Prompt for confirmation
+        vim.ui.input({ prompt = "Delete file '" .. expanded .. "'? (yes/no): " }, function(input)
+          if input and (input == "yes" or input == "y") then
+            local ok, err = os.remove(expanded)
+            if ok then
+              -- Remove the matched pattern from the line
+              local new_line = line:sub(1, s - 1) .. line:sub(e + 1)
+              vim.api.nvim_set_current_line(new_line)
+              -- Move cursor to the start of the removed pattern
+              vim.api.nvim_win_set_cursor(0, {row, s - 1})
+              vim.notify("Deleted: " .. expanded, vim.log.levels.INFO)
+            else
+              vim.notify("Failed to delete: " .. (err or expanded), vim.log.levels.ERROR)
+            end
+          else
+            vim.notify("Aborted delete", vim.log.levels.INFO)
+          end
+        end)
+        return
+      end
+      search_start = e + 1
+    end
+  end
+
+  vim.notify("No [[FILENAME]] or {{FILENAME}} under cursor", vim.log.levels.ERROR)
+end
+
+-- Example key mapping for DeleteFile: <leader>;d
+vim.keymap.set('n', '<leader>;d', DeleteFile, { noremap = true, silent = true, desc = "Delete file under [[FILENAME]] or {{FILENAME}} and remove the pattern" })
+
+
+
+
+-- Assumes is_wsl() is already defined elsewhere in your config
+
+-- Helper: Open a directory with the system default file explorer
+local function open_directory(dirpath)
+  if is_wsl() and vim.fn.executable("wslview") == 1 then
+    vim.fn.jobstart({'wslview', dirpath}, {detach = true})
+    vim.notify("Opened directory with wslview: " .. dirpath, vim.log.levels.INFO)
+  elseif vim.fn.executable("xdg-open") == 1 then
+    vim.fn.jobstart({'xdg-open', dirpath}, {detach = true})
+    vim.notify("Opened directory with xdg-open: " .. dirpath, vim.log.levels.INFO)
+  else
+    vim.notify("Neither wslview nor xdg-open is available to open the directory.", vim.log.levels.ERROR)
+  end
+end
+
+local function open_current_file_dir()
+  local currfile = vim.api.nvim_buf_get_name(0)
+  if currfile == "" then
+    vim.notify("No file is currently open.", vim.log.levels.ERROR)
+    return
+  end
+  local currdir = vim.fn.fnamemodify(currfile, ":h")
+  local name_no_ext = vim.fn.fnamemodify(currfile, ":t:r")
+  local target_dir = currdir .. "/" .. name_no_ext
+
+  -- Create the directory if it doesn't exist
+  if vim.fn.isdirectory(target_dir) == 0 then
+    vim.fn.mkdir(target_dir, "p")
+  end
+
+  open_directory(target_dir)
+end
+
+vim.keymap.set('n', '<leader>;e', open_current_file_dir, { noremap = true, silent = true, desc = "Open $CURRDIR/$NAME/ in file explorer" })
+
