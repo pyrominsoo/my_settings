@@ -316,12 +316,23 @@ local function open_current_file_dir()
   local name_no_ext = vim.fn.fnamemodify(currfile, ":t:r")
   local target_dir = currdir .. "/" .. name_no_ext
 
-  -- Create the directory if it doesn't exist
   if vim.fn.isdirectory(target_dir) == 0 then
-    vim.fn.mkdir(target_dir, "p")
+    vim.ui.input({ prompt = "Directory '" .. target_dir .. "' does not exist. Create it? (yes/no): " }, function(input)
+      if input and (input == "yes" or input == "y") then
+        local ok, err = pcall(vim.fn.mkdir, target_dir, "p")
+        if ok then
+          vim.notify("Created directory: " .. target_dir, vim.log.levels.INFO)
+          open_directory(target_dir)
+        else
+          vim.notify("Failed to create directory: " .. (err or target_dir), vim.log.levels.ERROR)
+        end
+      else
+        vim.notify("Aborted: Directory not created.", vim.log.levels.INFO)
+      end
+    end)
+  else
+    open_directory(target_dir)
   end
-
-  open_directory(target_dir)
 end
 
 vim.keymap.set('n', '<leader>;e', open_current_file_dir, { noremap = true, silent = true, desc = "Open $CURRDIR/$NAME/ in file explorer" })
