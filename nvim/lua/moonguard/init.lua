@@ -151,33 +151,27 @@ end, { desc = "Insert Zim Wiki header and section with filename" })
 
 
 
--- Function to open a file with the default system application
-local function open_with_default(filepath)
-  vim.fn.jobstart({'xdg-open', filepath}, {detach = true})
+
+
+
+-- Helper: Detect if running in WSL
+local function is_wsl()
+  local ok, output = pcall(function()
+    return vim.fn.readfile("/proc/version")[1]
+  end)
+  return ok and output and output:match("Microsoft") ~= nil
 end
 
 -- Helper: Open a file with the system default application
 local function open_with_default(filepath)
-  vim.fn.jobstart({'xdg-open', filepath}, {detach = true})
+  if is_wsl() and vim.fn.executable("wslview") == 1 then
+    vim.fn.jobstart({'wslview', filepath}, {detach = true})
+  else
+    vim.fn.jobstart({'xdg-open', filepath}, {detach = true})
+  end
 end
 
--- Helper: Open a file with the system default application
-local function open_with_default(filepath)
-  vim.fn.jobstart({'xdg-open', filepath}, {detach = true})
-end
-
-
--- Helper: Open a file with the system default application
-local function open_with_default(filepath)
-  vim.fn.jobstart({'xdg-open', filepath}, {detach = true})
-end
-
-
--- Helper: Open a file with the system default application
-local function open_with_default(filepath)
-  vim.fn.jobstart({'xdg-open', filepath}, {detach = true})
-end
-
+-- Main function for <leader>;o
 local function open_delimited_filename()
   local row, col = unpack(vim.api.nvim_win_get_cursor(0))
   local line = vim.api.nvim_get_current_line()
@@ -185,8 +179,8 @@ local function open_delimited_filename()
 
   -- Patterns for [[FILENAME]] and {{FILENAME}}
   local patterns = {
-    {pattern = "%[%[(.-)%]%]",   len_open = 2, len_close = 2},
-    {pattern = "%{%{(.-)%}%}",   len_open = 2, len_close = 2},
+    {pattern = "%[%[(.-)%]%]"},
+    {pattern = "%{%{(.-)%}%}"},
   }
 
   for _, pat in ipairs(patterns) do
@@ -200,12 +194,10 @@ local function open_delimited_filename()
         local currdir = vim.fn.fnamemodify(currfile, ":h")
         local name_no_ext = vim.fn.fnamemodify(currfile, ":t:r")
 
-        -- Expand FILENAME if it starts with ./
-        local expanded
-        if fname:sub(1,2) == "./" then
+        -- Expand FILENAME if it starts with ./ or .\
+        local expanded = fname
+        if fname:sub(1,2) == "./" or fname:sub(1,2) == ".\\" then
           expanded = currdir .. "/" .. name_no_ext .. "/" .. fname:sub(3)
-        else
-          expanded = fname
         end
 
         open_with_default(expanded)
@@ -220,6 +212,8 @@ end
 
 -- Key mapping: <leader>;o in normal mode
 vim.keymap.set('n', '<leader>;o', open_delimited_filename, { noremap = true, silent = true, desc = "Open [[FILENAME]] or {{FILENAME}} under cursor" })
+
+
 
 
 
