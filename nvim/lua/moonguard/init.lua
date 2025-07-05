@@ -221,3 +221,14 @@ end
 -- Key mapping: <leader>;o in normal mode
 vim.keymap.set('n', '<leader>;o', open_delimited_filename, { noremap = true, silent = true, desc = "Open [[FILENAME]] or {{FILENAME}} under cursor" })
 
+
+
+vim.keymap.set('n', '<leader>;f', function()
+  -- Properly escape and quote the pattern for vimgrep!
+  local pattern = [[/\[\[.\{-}\]\]\|{{.\{-}}}/]]
+  -- Run vimgrep! with the pattern on the current file
+  vim.cmd('vimgrep! ' .. pattern .. ' %')
+  -- Open the quickfix window if there are matches
+  vim.cmd('cw')
+end, { noremap = true, silent = true, desc = "List all [[FILENAME]] and {{FILENAME}} in quickfix" })
+
