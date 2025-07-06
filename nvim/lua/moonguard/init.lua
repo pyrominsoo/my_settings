@@ -314,6 +314,7 @@ vim.keymap.set('n', '<leader>;e', open_current_file_dir, { noremap = true, silen
 
 
 
+
 local function open_pagename_under_cursor()
   local row, col = unpack(vim.api.nvim_win_get_cursor(0))
   local line = vim.api.nvim_get_current_line()
@@ -339,6 +340,14 @@ local function open_pagename_under_cursor()
         pagename = pagename:sub(2)
         relpath = transform_pagename(pagename)
         startdir = currdir .. "/" .. name_no_ext
+        -- Create the directory if it does not exist
+        if vim.fn.isdirectory(startdir) == 0 then
+          local ok, err = pcall(vim.fn.mkdir, startdir, "p")
+          if not ok then
+            vim.notify("Failed to create directory: " .. (err or startdir), vim.log.levels.ERROR)
+            return
+          end
+        end
         fullpath = startdir .. "/" .. relpath
         vim.cmd.edit(fullpath)
         return
