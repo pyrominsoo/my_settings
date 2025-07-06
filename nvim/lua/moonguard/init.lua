@@ -311,3 +311,81 @@ end
 
 vim.keymap.set('n', '<leader>;e', open_current_file_dir, { noremap = true, silent = true, desc = "Open $CURRDIR/$NAME/ in file explorer" })
 
+
+
+
+local function open_pagename_under_cursor()
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local line = vim.api.nvim_get_current_line()
+  local cursor_pos = col + 1 -- Lua strings are 1-based
+
+  -- Find [[PAGENAME]] under cursor
+  local s, e, pagename = string.find(line, "%[%[([^%]]-)%]%]")
+  while s do
+    if cursor_pos >= s and cursor_pos <= e then
+      local orig_pagename = pagename
+      local currfile = vim.api.nvim_buf_get_name(0)
+      local currdir = vim.fn.fnamemodify(currfile, ":h")
+      local name_no_ext = vim.fn.fnamemodify(currfile, ":t:r")
+      local relpath, startdir, fullpath
+
+      -- Transform PAGENAME: replace : with /, space with _, append .txt
+      local function transform_pagename(pn)
+        return pn:gsub(":", "/"):gsub(" ", "_") .. ".txt"
+      end
+
+      -- If first character is '+'
+      if pagename:sub(1, 1) == "+" then
+        pagename = pagename:sub(2)
+        relpath = transform_pagename(pagename)
+        startdir = currdir .. "/" .. name_no_ext
+        fullpath = startdir .. "/" .. relpath
+        vim.cmd.edit(fullpath)
+        return
+      else
+        relpath = transform_pagename(pagename)
+        local session_root = vim.fn.getcwd()
+        local search_dir = currdir
+        local found = false
+
+        -- Helper: normalize path (remove trailing /)
+        local function normpath(path)
+          return path:gsub("/+$", "")
+        end
+
+        -- Search upwards for the file, stopping at session root
+        while true do
+          local candidate = normpath(search_dir) .. "/" .. relpath
+          if vim.fn.filereadable(candidate) == 1 then
+            startdir = search_dir
+            fullpath = candidate
+            found = true
+            break
+          end
+          if normpath(search_dir) == normpath(session_root) then
+            break
+          end
+          local parent = vim.fn.fnamemodify(search_dir, ":h")
+          if parent == search_dir then
+            break
+          end
+          search_dir = parent
+        end
+
+        if not found then
+          vim.notify("Cannot find file for [[" .. orig_pagename .. "]] in current or parent directories up to session root.", vim.log.levels.ERROR)
+          return
+        end
+
+        vim.cmd.edit(fullpath)
+        return
+      end
+    end
+    -- Look for next match on the line
+    s, e, pagename = string.find(line, "%[%[([^%]]-)%]%]", e + 1)
+  end
+  vim.notify("No [[PAGENAME]] under cursor", vim.log.levels.ERROR)
+end
+
+vim.keymap.set('n', '<leader>;g', open_pagename_under_cursor, { noremap = true, silent = true, desc = "Open [[PAGENAME]] as file" })
+
