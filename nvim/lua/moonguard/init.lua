@@ -491,3 +491,70 @@ end
 
 vim.keymap.set('n', '<leader>;l', create_link_from_path_under_cursor, { noremap = true, silent = true, desc = "Replace .txt path under cursor with [[PAGENAME]] link" })
 
+
+
+
+local function grep_and_sort_dates()
+  -- Regex: [ ] ... <YYYY-MM-DD
+  local rg_pattern = [[\[ \].*<\d{4}-\d{2}-\d{2}]]
+  local grep_cmd
+
+  if vim.fn.executable("rg") == 1 then
+    -- rg outputs: filename:line:text
+    grep_cmd = "rg --type-add 'txt:*.txt' --type txt -n -e '" .. rg_pattern .. "' --no-heading"
+  else
+    -- grep outputs: filename:line:text
+    grep_cmd = "grep -r -n -E '" .. [[\[ \].*<([0-9]{4}-[0-9]{2}-[0-9]{2})]] .. "' --include='*.txt' ."
+  end
+
+  local handle = io.popen(grep_cmd)
+  if not handle then
+    vim.notify("Failed to run grep command!", vim.log.levels.ERROR)
+    return
+  end
+  local result = handle:read("*a")
+  handle:close()
+
+  -- Parse lines and extract date for sorting
+  local lines = {}
+  for line in result:gmatch("[^\r\n]+") do
+    -- Extract filename, line number, and text
+    local filename, lnum, text = line:match("^([^:]+):(%d+):(.*)$")
+    if filename and lnum and text then
+      -- Extract the first <YYYY-MM-DD found in the line
+      local date = text:match("<(%d%d%d%d%-%d%d%-%d%d)")
+      -- Ensure [ ] comes before the date
+      local pos_checkbox = text:find("%[ %]")
+      local pos_date = text:find("<%d%d%d%d%-%d%d%-%d%d")
+      if date and pos_checkbox and pos_date and pos_checkbox < pos_date then
+        table.insert(lines, {date = date, filename = filename, lnum = tonumber(lnum), text = text})
+      end
+    end
+  end
+
+  -- Sort by date (chronological)
+  table.sort(lines, function(a, b) return a.date < b.date end)
+
+  -- Prepare quickfix list
+  local qf = {}
+  for _, entry in ipairs(lines) do
+    table.insert(qf, {
+      filename = entry.filename,
+      lnum = entry.lnum,
+      col = 1,
+      text = entry.text
+    })
+  end
+
+  if #qf == 0 then
+    vim.notify("No lines with [ ] before <YYYY-MM-DD found in .txt files.", vim.log.levels.INFO)
+    return
+  end
+
+  vim.fn.setqflist({}, ' ', {title = "Lines with [ ] before <YYYY-MM-DD", items = qf})
+  vim.cmd("copen")
+  vim.notify("Sorted results loaded in quickfix window.", vim.log.levels.INFO)
+end
+
+vim.keymap.set('n', '<leader>;k', grep_and_sort_dates, { noremap = true, silent = true, desc = "Grep [ ] ... <YYYY-MM-DD in .txt files and sort chronologically" })
+
