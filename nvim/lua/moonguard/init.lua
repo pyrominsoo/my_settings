@@ -194,8 +194,9 @@ local function open_delimited_filename()
   vim.notify("No [[FILENAME]] or {{FILENAME}} under cursor", vim.log.levels.ERROR)
 end
 
--- Key mapping: <leader>;o in normal mode
-vim.keymap.set('n', '<leader>;o', open_delimited_filename, { noremap = true, silent = true, desc = "Open [[FILENAME]] or {{FILENAME}} under cursor" })
+-- Commented out as its functionality was merged with <leader>;g
+-- -- Key mapping: <leader>;o in normal mode
+-- vim.keymap.set('n', '<leader>;o', open_delimited_filename, { noremap = true, silent = true, desc = "Open [[FILENAME]] or {{FILENAME}} under cursor" })
 
 
 
@@ -395,7 +396,8 @@ local function open_pagename_under_cursor()
   vim.notify("No [[PAGENAME]] under cursor", vim.log.levels.ERROR)
 end
 
-vim.keymap.set('n', '<leader>;g', open_pagename_under_cursor, { noremap = true, silent = true, desc = "Open [[PAGENAME]] as file" })
+-- Commented out as it was merged with <leader>;o
+-- vim.keymap.set('n', '<leader>;g', open_pagename_under_cursor, { noremap = true, silent = true, desc = "Open [[PAGENAME]] as file" })
 
 
 
@@ -556,4 +558,44 @@ local function grep_and_sort_dates()
 end
 
 vim.keymap.set('n', '<leader>;k', grep_and_sort_dates, { noremap = true, silent = true, desc = "Grep [ ] ... <YYYY-MM-DD in .txt files and sort chronologically" })
+
+
+
+
+local function open_file_page_or_url()
+  -- Get the string under cursor, stripping [[ ]]
+  local cword = vim.fn.expand("<cWORD>")
+  local str = cword:gsub("^%[%[", ""):gsub("%]%]$", "")
+
+  -- URL detection regex (matches http(s)://, ftp://, etc.)
+  if str:match("^[a-zA-Z]+://%S+$") then
+    -- Prefer wslview if available, else xdg-open
+    local opener = vim.fn.executable("wslview") == 1 and "wslview"
+                or (vim.fn.executable("xdg-open") == 1 and "xdg-open")
+    if opener then
+      vim.fn.jobstart({opener, str}, {detach = true})
+      vim.notify("Opened URL: " .. str, vim.log.levels.INFO)
+    else
+      vim.notify("No suitable URL opener found (wslview or xdg-open)", vim.log.levels.ERROR)
+    end
+    return
+  end
+
+  -- If it starts with a dot, treat as file
+  if str:sub(1, 1) == "." then
+    open_delimited_filename()
+    return
+  end
+
+  -- If it contains a slash (forward or back) or has an extension, treat as file
+  if str:find("[/\\]") or str:find("%.[^./\\]+$") then
+    open_delimited_filename()
+    return
+  end
+
+  -- Otherwise, treat as page name
+  open_pagename_under_cursor()
+end
+
+vim.keymap.set('n', '<leader>;o', open_file_page_or_url, { noremap = true, silent = true, desc = "Open file, page, or URL under cursor" })
 
