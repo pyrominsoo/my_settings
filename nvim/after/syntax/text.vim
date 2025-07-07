@@ -4,11 +4,13 @@ highlight Eq2 guifg=purple ctermfg=Blue
 highlight Eq3 guifg=#008000 ctermfg=green
 highlight Eq4 guifg=DeepPink ctermfg=Magenta
 highlight Eq5 guifg=red ctermfg=Red
+highlight Eq6 ctermfg=30 guifg=#008B8B
 highlight MyFileLink guifg=blue ctermfg=Yellow
 highlight CancelRegion ctermfg=8 guifg=#888888
 highlight MyWebURL ctermfg=Blue guifg=#0000AF
 
 " Syntax matches for lines with = decorations
+syntax match Eq6 /^====== \zs.\{-}\ze ======$/
 syntax match Eq5 /^===== \zs.\{-}\ze =====$/
 syntax match Eq4 /^==== \zs.\{-}\ze ====$/
 syntax match Eq3 /^=== \zs.\{-}\ze ===$/
