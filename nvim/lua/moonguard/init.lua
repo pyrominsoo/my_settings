@@ -74,10 +74,9 @@ vim.cmd([[set listchars=tab:>~,nbsp:_,trail:.]])
 -- disable autocomment
 vim.cmd([[autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o]])
 
-
 function SearchToday()
     local base = os.date('%Y-%m-%d')
-    str = [[grep! "\[ \] .*]] .. base .. [["]]
+    local str = [[grep! -g "*.txt" "\[ \] .*]] .. base .. [["]]
     vim.cmd(str)
     vim.cmd("cw")
 end
@@ -85,13 +84,13 @@ end
 function SearchTomo()
     local timeshift = 24 * 60 * 60
     local base = os.date('%Y-%m-%d', os.time() + timeshift)
-    str = [[grep! "\[ \] .*]] .. base .. [["]]
+    local str = [[grep! -g "*.txt" "\[ \] .*]] .. base .. [["]]
     vim.cmd(str)
     vim.cmd("cw")
 end
 
 function SearchNodate()
-    str = [[grep! "\[ \] .*"]]
+    local str = [[grep! -g "*.txt" "\[ \] .*"]]
     vim.cmd(str)
     vim.cmd("cw")
 end
