@@ -310,3 +310,250 @@ end
 
 vim.keymap.set('n', '<leader>;e', open_current_file_dir, { noremap = true, silent = true, desc = "Open $CURRDIR/$NAME/ in file explorer" })
 
+
+
+
+
+local function open_pagename_under_cursor()
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local line = vim.api.nvim_get_current_line()
+  local cursor_pos = col + 1 -- Lua strings are 1-based
+
+  -- Find [[PAGENAME]] under cursor
+  local s, e, pagename = string.find(line, "%[%[([^%]]-)%]%]")
+  while s do
+    if cursor_pos >= s and cursor_pos <= e then
+      local orig_pagename = pagename
+      local currfile = vim.api.nvim_buf_get_name(0)
+      local currdir = vim.fn.fnamemodify(currfile, ":h")
+      local name_no_ext = vim.fn.fnamemodify(currfile, ":t:r")
+      local relpath, startdir, fullpath
+
+      -- Transform PAGENAME: replace : with /, space with _, append .txt
+      local function transform_pagename(pn)
+        return pn:gsub(":", "/"):gsub(" ", "_") .. ".txt"
+      end
+
+      -- If first character is '+'
+      if pagename:sub(1, 1) == "+" then
+        pagename = pagename:sub(2)
+        relpath = transform_pagename(pagename)
+        startdir = currdir .. "/" .. name_no_ext
+        -- Create the directory if it does not exist
+        if vim.fn.isdirectory(startdir) == 0 then
+          local ok, err = pcall(vim.fn.mkdir, startdir, "p")
+          if not ok then
+            vim.notify("Failed to create directory: " .. (err or startdir), vim.log.levels.ERROR)
+            return
+          end
+        end
+        fullpath = startdir .. "/" .. relpath
+        vim.cmd.edit(fullpath)
+        return
+      else
+        relpath = transform_pagename(pagename)
+        local session_root = vim.fn.getcwd()
+        local search_dir = currdir
+        local found = false
+
+        -- Helper: normalize path (remove trailing /)
+        local function normpath(path)
+          return path:gsub("/+$", "")
+        end
+
+        -- Search upwards for the file, stopping at session root
+        while true do
+          local candidate = normpath(search_dir) .. "/" .. relpath
+          if vim.fn.filereadable(candidate) == 1 then
+            startdir = search_dir
+            fullpath = candidate
+            found = true
+            break
+          end
+          if normpath(search_dir) == normpath(session_root) then
+            break
+          end
+          local parent = vim.fn.fnamemodify(search_dir, ":h")
+          if parent == search_dir then
+            break
+          end
+          search_dir = parent
+        end
+
+        if not found then
+          vim.notify("Cannot find file for [[" .. orig_pagename .. "]] in current or parent directories up to session root.", vim.log.levels.ERROR)
+          return
+        end
+
+        vim.cmd.edit(fullpath)
+        return
+      end
+    end
+    -- Look for next match on the line
+    s, e, pagename = string.find(line, "%[%[([^%]]-)%]%]", e + 1)
+  end
+  vim.notify("No [[PAGENAME]] under cursor", vim.log.levels.ERROR)
+end
+
+vim.keymap.set('n', '<leader>;g', open_pagename_under_cursor, { noremap = true, silent = true, desc = "Open [[PAGENAME]] as file" })
+
+
+
+
+local function create_link_from_path_under_cursor()
+  local cwd = vim.fn.getcwd()
+  local currfile = vim.api.nvim_buf_get_name(0)
+  local curr_rel = vim.fn.fnamemodify(currfile, ":.")
+  local name_no_ext = vim.fn.fnamemodify(currfile, ":t:r")
+  -- Get current line and cursor position
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local line = vim.api.nvim_get_current_line()
+  local cursor_pos = col + 1 -- Lua strings are 1-based
+
+  -- Find a .txt relative path under the cursor (match word chars, /, _, -, and .txt at the end)
+  local pattern = "([%w%-%._/]+%.txt)"
+  local s, e, path_under_cursor = string.find(line, pattern)
+  local found = false
+  while s do
+    if cursor_pos >= s and cursor_pos <= e then
+      found = true
+      break
+    end
+    s, e, path_under_cursor = string.find(line, pattern, e + 1)
+  end
+
+  if not found or not path_under_cursor then
+    vim.notify("No relative .txt file path under cursor", vim.log.levels.ERROR)
+    return
+  end
+
+  -- Make both paths absolute for comparison
+  local abs_under_cursor = vim.fn.fnamemodify(path_under_cursor, ":p")
+  local abs_currfile = vim.fn.fnamemodify(currfile, ":p")
+
+  -- Get the relative paths to cwd
+  local rel_under_cursor = vim.fn.fnamemodify(abs_under_cursor, ":.")
+  local rel_currfile = vim.fn.fnamemodify(abs_currfile, ":.")
+
+  -- Split paths into components
+  local function split_path(p)
+    local t = {}
+    for part in string.gmatch(p, "[^/]+") do
+      table.insert(t, part)
+    end
+    return t
+  end
+
+  local parts1 = split_path(rel_under_cursor)
+  local parts2 = split_path(rel_currfile)
+
+  -- Find common prefix
+  local i = 1
+  while parts1[i] and parts2[i] and parts1[i] == parts2[i] do
+    i = i + 1
+  end
+
+  -- Remove common prefix
+  local remaining = {}
+  for j = i, #parts1 do
+    table.insert(remaining, parts1[j])
+  end
+
+  if #remaining == 0 then
+    vim.notify("The two files are the same or no unique path found.", vim.log.levels.ERROR)
+    return
+  end
+
+  -- If the remaining path starts with $NAME/, replace with +
+  local pagename
+  if #remaining >= 2 and remaining[1] == name_no_ext then
+    -- Remove the $NAME/ prefix and replace with +
+    table.remove(remaining, 1)
+    pagename = "+" .. table.concat(remaining, "/")
+  else
+    pagename = table.concat(remaining, "/")
+  end
+
+  -- Replace / with :, remove .txt, wrap with [[ ]]
+  pagename = pagename:gsub("/", ":")
+  pagename = pagename:gsub("%.txt$", "")
+  local link = "[[" .. pagename .. "]]"
+
+  -- Replace the path under cursor with the link string
+  local newline = line:sub(1, s - 1) .. link .. line:sub(e + 1)
+  vim.api.nvim_set_current_line(newline)
+  -- Move cursor to the start of the new link
+  vim.api.nvim_win_set_cursor(0, {row, s - 1})
+
+  vim.notify("Replaced path with link: " .. link, vim.log.levels.INFO)
+end
+
+vim.keymap.set('n', '<leader>;l', create_link_from_path_under_cursor, { noremap = true, silent = true, desc = "Replace .txt path under cursor with [[PAGENAME]] link" })
+
+
+
+
+local function grep_and_sort_dates()
+  -- Regex: [ ] ... <YYYY-MM-DD
+  local rg_pattern = [[\[ \].*<\d{4}-\d{2}-\d{2}]]
+  local grep_cmd
+
+  if vim.fn.executable("rg") == 1 then
+    -- rg outputs: filename:line:text
+    grep_cmd = "rg --type-add 'txt:*.txt' --type txt -n -e '" .. rg_pattern .. "' --no-heading"
+  else
+    -- grep outputs: filename:line:text
+    grep_cmd = "grep -r -n -E '" .. [[\[ \].*<([0-9]{4}-[0-9]{2}-[0-9]{2})]] .. "' --include='*.txt' ."
+  end
+
+  local handle = io.popen(grep_cmd)
+  if not handle then
+    vim.notify("Failed to run grep command!", vim.log.levels.ERROR)
+    return
+  end
+  local result = handle:read("*a")
+  handle:close()
+
+  -- Parse lines and extract date for sorting
+  local lines = {}
+  for line in result:gmatch("[^\r\n]+") do
+    -- Extract filename, line number, and text
+    local filename, lnum, text = line:match("^([^:]+):(%d+):(.*)$")
+    if filename and lnum and text then
+      -- Extract the first <YYYY-MM-DD found in the line
+      local date = text:match("<(%d%d%d%d%-%d%d%-%d%d)")
+      -- Ensure [ ] comes before the date
+      local pos_checkbox = text:find("%[ %]")
+      local pos_date = text:find("<%d%d%d%d%-%d%d%-%d%d")
+      if date and pos_checkbox and pos_date and pos_checkbox < pos_date then
+        table.insert(lines, {date = date, filename = filename, lnum = tonumber(lnum), text = text})
+      end
+    end
+  end
+
+  -- Sort by date (chronological)
+  table.sort(lines, function(a, b) return a.date < b.date end)
+
+  -- Prepare quickfix list
+  local qf = {}
+  for _, entry in ipairs(lines) do
+    table.insert(qf, {
+      filename = entry.filename,
+      lnum = entry.lnum,
+      col = 1,
+      text = entry.text
+    })
+  end
+
+  if #qf == 0 then
+    vim.notify("No lines with [ ] before <YYYY-MM-DD found in .txt files.", vim.log.levels.INFO)
+    return
+  end
+
+  vim.fn.setqflist({}, ' ', {title = "Lines with [ ] before <YYYY-MM-DD", items = qf})
+  vim.cmd("copen")
+  vim.notify("Sorted results loaded in quickfix window.", vim.log.levels.INFO)
+end
+
+vim.keymap.set('n', '<leader>;k', grep_and_sort_dates, { noremap = true, silent = true, desc = "Grep [ ] ... <YYYY-MM-DD in .txt files and sort chronologically" })
+
