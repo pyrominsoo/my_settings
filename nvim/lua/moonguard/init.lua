@@ -152,7 +152,14 @@ end, { desc = "Insert Zim Wiki header and section with filename" })
 
 -- Helper: Open a file with the system default application
 local function open_with_default(filepath)
-  vim.fn.jobstart({'wslview', filepath}, {detach = true})
+  -- Prefer wslview if available, else xdg-open
+  local opener = vim.fn.executable("wslview") == 1 and "wslview"
+                or (vim.fn.executable("xdg-open") == 1 and "xdg-open")
+  if opener then
+    vim.fn.jobstart({opener, filepath}, {detach = true})
+  else
+    vim.notify("No suitable opener found (wslview or xdg-open)", vim.log.levels.ERROR)
+  end
 end
 
 -- Main function for <leader>;o
@@ -276,8 +283,15 @@ vim.keymap.set('n', '<leader>;d', DeleteFile, { noremap = true, silent = true, d
 
 -- Helper: Open a directory with the system default file explorer
 local function open_directory(dirpath)
-  vim.fn.jobstart({'wslview', dirpath}, {detach = true})
-  vim.notify("Opened directory with wslview: " .. dirpath, vim.log.levels.INFO)
+  -- Prefer wslview if available, else xdg-open
+  local opener = vim.fn.executable("wslview") == 1 and "wslview"
+                or (vim.fn.executable("xdg-open") == 1 and "xdg-open")
+  if opener then
+    vim.fn.jobstart({opener, dirpath}, {detach = true})
+    vim.notify("Opened directory with wslview: " .. dirpath, vim.log.levels.INFO)
+  else
+    vim.notify("No suitable opener found (wslview or xdg-open)", vim.log.levels.ERROR)
+  end
 end
 
 local function open_current_file_dir()
