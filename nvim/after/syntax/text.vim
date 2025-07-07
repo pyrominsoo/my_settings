@@ -1,10 +1,10 @@
 " Highlight groups with desired colors
-highlight Eq1 guifg=orange ctermfg=Magenta
+highlight Eq1 guifg=orange ctermfg=Red
 highlight Eq2 guifg=purple ctermfg=Blue
-highlight Eq3 guifg=blue ctermfg=Yellow
-highlight Eq4 guifg=DeepPink ctermfg=Red
+highlight Eq3 guifg=#008000 ctermfg=green
+highlight Eq4 guifg=DeepPink ctermfg=Magenta
 highlight Eq5 guifg=red ctermfg=Red
-highlight MyFileLink guifg=#00FF00 ctermfg=Green
+highlight MyFileLink guifg=blue ctermfg=Yellow
 highlight CancelRegion ctermfg=8 guifg=#888888
 
 " Syntax matches for lines with = decorations
