@@ -658,3 +658,45 @@ end
 
 vim.keymap.set('n', '<leader>;o', open_file_page_or_url, { noremap = true, silent = true, desc = "Open file, page, or URL under cursor" })
 
+
+
+
+
+local function capitalize_sentences_in_line()
+  local row = vim.api.nvim_win_get_cursor(0)[1]
+  local line = vim.api.nvim_get_current_line()
+
+  -- Lowercase the entire line first
+  line = line:lower()
+
+  -- Capitalize the first letter of the line if needed
+  line = line:gsub("^%s*([a-z])", function(c) return c:upper() end)
+
+  -- Capitalize after sentence-ending punctuation (.!?), possibly followed by quotes or parentheses, then whitespace
+  line = line:gsub("([%.!?][\"')%]]*%s+)([a-z])", function(punct, c)
+    return punct .. c:upper()
+  end)
+
+  -- Capitalize standalone "i" (not part of another word)
+  -- Handles: " i ", " i.", " i,", " i!", " i?", " i;", " i:", " i)", " i]", " i'", " i\"", " i\n", etc.
+  line = line:gsub("(%W)i(%W)", function(a, b)
+    return a .. "I" .. b
+  end)
+  -- Also handle "i" at the start or end of line
+  line = line:gsub("^i(%W)", "I%1")
+  line = line:gsub("(%W)i$", "%1I")
+  line = line:gsub("^i$", "I")
+
+  vim.api.nvim_set_current_line(line)
+end
+
+-- Only map in plain text files
+local TextCapGroup = vim.api.nvim_create_augroup("TextCapGroup", {})
+vim.api.nvim_create_autocmd({"FileType"}, {
+  group = TextCapGroup,
+  pattern = "text",
+  callback = function()
+    vim.keymap.set("n", "<leader>;g", capitalize_sentences_in_line, { buffer = true, noremap = true, silent = true, desc = "Capitalize sentences in line" })
+  end,
+})
+
