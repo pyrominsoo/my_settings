@@ -662,41 +662,65 @@ vim.keymap.set('n', '<leader>;o', open_file_page_or_url, { noremap = true, silen
 
 
 
-local function capitalize_sentences_in_line()
-  local row = vim.api.nvim_win_get_cursor(0)[1]
-  local line = vim.api.nvim_get_current_line()
-
-  -- Lowercase the entire line first
+local function capitalize_sentences_in_line(line)
   line = line:lower()
-
-  -- Capitalize the first letter of the line if needed
   line = line:gsub("^%s*([a-z])", function(c) return c:upper() end)
-
-  -- Capitalize after sentence-ending punctuation (.!?), possibly followed by quotes or parentheses, then whitespace
   line = line:gsub("([%.!?][\"')%]]*%s+)([a-z])", function(punct, c)
     return punct .. c:upper()
   end)
-
-  -- Capitalize standalone "i" (not part of another word)
-  -- Handles: " i ", " i.", " i,", " i!", " i?", " i;", " i:", " i)", " i]", " i'", " i\"", " i\n", etc.
   line = line:gsub("(%W)i(%W)", function(a, b)
     return a .. "I" .. b
   end)
-  -- Also handle "i" at the start or end of line
   line = line:gsub("^i(%W)", "I%1")
   line = line:gsub("(%W)i$", "%1I")
   line = line:gsub("^i$", "I")
-
-  vim.api.nvim_set_current_line(line)
+  return line
 end
 
--- Only map in plain text files
+
+local function capitalize_sentences_in_visual()
+  -- Get visual selection range
+  local mode = vim.fn.mode()
+  if mode ~= 'v' and mode ~= 'V' then
+    vim.notify("No visual selection active.", vim.log.levels.INFO)
+    return
+  end
+  local bufnr = vim.api.nvim_get_current_buf()
+  local start_pos = vim.fn.getpos("'<")
+  local end_pos = vim.fn.getpos("'>")
+  local start_row = start_pos[2] - 1
+  local end_row = end_pos[2] - 1
+
+  -- Get and transform lines
+  local lines = vim.api.nvim_buf_get_lines(bufnr, start_row, end_row + 1, false)
+  for i, line in ipairs(lines) do
+    lines[i] = capitalize_sentences_in_line(line)
+  end
+  vim.api.nvim_buf_set_lines(bufnr, start_row, end_row + 1, false, lines)
+  vim.notify("Capitalized sentences in selection.", vim.log.levels.INFO)
+end
+
+
 local TextCapGroup = vim.api.nvim_create_augroup("TextCapGroup", {})
-vim.api.nvim_create_autocmd({"FileType"}, {
+vim.api.nvim_create_autocmd("FileType", {
   group = TextCapGroup,
   pattern = "text",
   callback = function()
-    vim.keymap.set("n", "<leader>;g", capitalize_sentences_in_line, { buffer = true, noremap = true, silent = true, desc = "Capitalize sentences in line" })
+    -- Normal mode: current line
+    vim.keymap.set("n", "<leader>;g", function()
+      local row = vim.api.nvim_win_get_cursor(0)[1]
+      local orig_line = vim.api.nvim_get_current_line()
+      local new_line = capitalize_sentences_in_line(orig_line)
+      if new_line ~= orig_line then
+        vim.api.nvim_set_current_line(new_line)
+        vim.notify("Line capitalized.", vim.log.levels.INFO)
+      else
+        vim.notify("No changes made; line already capitalized.", vim.log.levels.INFO)
+      end
+    end, { buffer = true, noremap = true, silent = true, desc = "Capitalize sentences in line" })
+
+    -- Visual mode: selection
+    vim.keymap.set("v", "<leader>;g", capitalize_sentences_in_visual, { buffer = true, noremap = true, silent = true, desc = "Capitalize sentences in selection" })
   end,
 })
 
