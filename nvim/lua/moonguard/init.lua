@@ -209,12 +209,58 @@ end
 
 
 vim.keymap.set('n', '<leader>;f', function()
-  -- Properly escape and quote the pattern for vimgrep!
-  local pattern = [[/\[\[.\{-}\]\]\|{{.\{-}}}/]]
-  -- Run vimgrep! with the pattern on the current file
-  vim.cmd('vimgrep! ' .. pattern .. ' %')
-  -- Open the quickfix window if there are matches
-  vim.cmd('cw')
+  local filename_matches = {}
+  local bufnr = vim.api.nvim_get_current_buf()
+  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+
+  -- Helper to check if a string is a FILENAME
+  local function is_filename(str)
+    return str:sub(1, 1) == "." or
+           str:find("[/\\]") or
+           str:find("%.[^./\\]+$")
+  end
+
+  for lnum, line in ipairs(lines) do
+    -- Find all [[...]] links
+    for link in line:gmatch("%[%[([^%]]+)%]%]") do
+      if is_filename(link) then
+        table.insert(filename_matches, {
+          bufnr = bufnr,
+          lnum = lnum,
+          col = line:find("%[%[" .. vim.pesc(link) .. "%]%]"),
+          text = line
+        })
+      end
+    end
+    -- Find all {{...}} links
+    for link in line:gmatch("%{%{(.-)%}%}") do
+      if is_filename(link) then
+        table.insert(filename_matches, {
+          bufnr = bufnr,
+          lnum = lnum,
+          col = line:find("{{" .. vim.pesc(link) .. "}}"),
+          text = line
+        })
+      end
+    end
+  end
+
+  if #filename_matches == 0 then
+    vim.notify("No [[FILENAME]] or {{FILENAME}} links found.", vim.log.levels.INFO)
+  else
+    vim.fn.setqflist({}, ' ', {
+      title = 'FILENAME links',
+      items = vim.tbl_map(function(m)
+        return {
+          bufnr = m.bufnr,
+          lnum = m.lnum,
+          col = m.col or 1,
+          text = m.text,
+        }
+      end, filename_matches)
+    })
+    vim.cmd('copen')
+  end
 end, { noremap = true, silent = true, desc = "List all [[FILENAME]] and {{FILENAME}} in quickfix" })
 
 
