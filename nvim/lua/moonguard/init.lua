@@ -108,26 +108,38 @@ autocmd({"BufEnter", "BufWinEnter"}, {
     end,
 })
 
--- Function to create a task at the cursor
-local function CreateTask(sentence)
+
+
+-- Function to format a task string
+local function format_task(text)
   local date = os.date("%Y-%m-%d")
-  local task = string.format("[ ] %s <%s", sentence, date)
-  vim.api.nvim_put({task}, "c", true, true)
+  return string.format("[ ] %s <%s", text, date)
 end
 
--- User command: :CreateTask Your task here
-vim.api.nvim_create_user_command("Task", function(opts)
-  CreateTask(opts.args)
-end, { nargs = "+" })
-
--- Keymap: <leader>;t prompts for a task and inserts it
+-- <leader>;t: smart task creator
 vim.keymap.set('n', '<leader>;t', function()
-  vim.ui.input({ prompt = "Task: " }, function(input)
-    if input and #input > 0 then
-      CreateTask(input)
-    end
-  end)
-end, { desc = "Create new task" })
+  local row = vim.api.nvim_win_get_cursor(0)[1]
+  local line = vim.api.nvim_get_current_line()
+  if line:match("^%s*$") then
+    -- Line is empty or whitespace: prompt for input and insert below
+    vim.ui.input({ prompt = "Task: " }, function(input)
+      if input and #input > 0 then
+        local task = format_task(input)
+        vim.api.nvim_put({task}, "c", true, true)
+      end
+    end)
+  else
+    -- Line has content: replace entire line with formatted task
+    local task = format_task(line)
+    vim.api.nvim_buf_set_lines(0, row-1, row, false, {task})
+  end
+end, { desc = "Create new task or replace line as task" })
+
+
+
+
+
+
 
 vim.keymap.set('n', '<leader>;h', function()
   -- Get current file name without extension
