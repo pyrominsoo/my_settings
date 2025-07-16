@@ -8,6 +8,7 @@ highlight Eq6 ctermfg=30 guifg=#008B8B
 highlight MyFileLink guifg=blue ctermfg=Yellow
 highlight CancelRegion ctermfg=8 guifg=#888888
 highlight MyWebURL ctermfg=Blue guifg=#0000AF
+highlight TodoHighlight guibg=LightGreen ctermbg=LightGreen
 
 " Syntax matches for lines with = decorations
 syntax match Eq6 /^====== \zs.\{-}\ze ======$/
@@ -30,3 +31,4 @@ highlight link CancelRegion CancelRegion
 
 syntax match MyWebURL /\(https\?\|ftp\):\/\/\S\+/
 
+syntax match TodoHighlight /TODO/
