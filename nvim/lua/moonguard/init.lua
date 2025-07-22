@@ -476,14 +476,14 @@ end
 local function create_link_from_path_under_cursor()
   local cwd = vim.fn.getcwd()
   local currfile = vim.api.nvim_buf_get_name(0)
-  local curr_rel = vim.fn.fnamemodify(currfile, ":.")
   local name_no_ext = vim.fn.fnamemodify(currfile, ":t:r")
+
   -- Get current line and cursor position
   local row, col = unpack(vim.api.nvim_win_get_cursor(0))
   local line = vim.api.nvim_get_current_line()
   local cursor_pos = col + 1 -- Lua strings are 1-based
 
-  -- Find a .txt relative path under the cursor (match word chars, /, _, -, and .txt at the end)
+  -- Find a .txt relative path under the cursor (word chars, /, _, -, .txt)
   local pattern = "([%w%-%._/]+%.txt)"
   local s, e, path_under_cursor = string.find(line, pattern)
   local found = false
@@ -496,19 +496,54 @@ local function create_link_from_path_under_cursor()
   end
 
   if not found or not path_under_cursor then
-    vim.notify("No relative .txt file path under cursor", vim.log.levels.ERROR)
+    -- No .txt path found; fallback: wrap contiguous non-whitespace string under cursor with [[ ]]
+    local start_pos, end_pos
+
+    -- Search backwards for start of string (stop at whitespace or start of line)
+    local i = cursor_pos
+    while i > 0 do
+      local c = line:sub(i, i)
+      if c:match("%s") then break end
+      i = i - 1
+    end
+    start_pos = i + 1
+
+    -- Search forwards for end of string (stop at whitespace or end of line)
+    i = cursor_pos
+    local line_len = #line
+    while i <= line_len do
+      local c = line:sub(i, i)
+      if c:match("%s") then break end
+      i = i + 1
+    end
+    end_pos = i - 1
+
+    if start_pos > end_pos then
+      vim.notify("No string under cursor to wrap", vim.log.levels.ERROR)
+      return
+    end
+
+    local word = line:sub(start_pos, end_pos)
+    local wrapped = "[[+" .. word .. "]]"
+    local newline = line:sub(1, start_pos - 1) .. wrapped .. line:sub(end_pos + 1)
+
+    vim.api.nvim_set_current_line(newline)
+    vim.api.nvim_win_set_cursor(0, {row, start_pos - 1})
+    vim.notify("Wrapped string under cursor with link: " .. wrapped, vim.log.levels.INFO)
     return
   end
+
+  -- If found .txt path, build link as before
 
   -- Make both paths absolute for comparison
   local abs_under_cursor = vim.fn.fnamemodify(path_under_cursor, ":p")
   local abs_currfile = vim.fn.fnamemodify(currfile, ":p")
 
-  -- Get the relative paths to cwd
+  -- Get relative paths to cwd
   local rel_under_cursor = vim.fn.fnamemodify(abs_under_cursor, ":.")
   local rel_currfile = vim.fn.fnamemodify(abs_currfile, ":.")
 
-  -- Split paths into components
+  -- Split paths into components (by '/')
   local function split_path(p)
     local t = {}
     for part in string.gmatch(p, "[^/]+") do
@@ -520,13 +555,13 @@ local function create_link_from_path_under_cursor()
   local parts1 = split_path(rel_under_cursor)
   local parts2 = split_path(rel_currfile)
 
-  -- Find common prefix
+  -- Find common prefix length
   local i = 1
   while parts1[i] and parts2[i] and parts1[i] == parts2[i] do
     i = i + 1
   end
 
-  -- Remove common prefix
+  -- Extract unique suffix from path under cursor
   local remaining = {}
   for j = i, #parts1 do
     table.insert(remaining, parts1[j])
@@ -537,31 +572,35 @@ local function create_link_from_path_under_cursor()
     return
   end
 
-  -- If the remaining path starts with $NAME/, replace with +
+  -- If remaining path starts with current file name, replace with +
   local pagename
   if #remaining >= 2 and remaining[1] == name_no_ext then
-    -- Remove the $NAME/ prefix and replace with +
     table.remove(remaining, 1)
     pagename = "+" .. table.concat(remaining, "/")
   else
     pagename = table.concat(remaining, "/")
   end
 
-  -- Replace / with :, remove .txt, wrap with [[ ]]
+  -- Format link: replace '/' with ':', remove trailing .txt, wrap with [[ ]]
   pagename = pagename:gsub("/", ":")
   pagename = pagename:gsub("%.txt$", "")
   local link = "[[" .. pagename .. "]]"
 
-  -- Replace the path under cursor with the link string
+  -- Replace path under cursor with link string
   local newline = line:sub(1, s - 1) .. link .. line:sub(e + 1)
   vim.api.nvim_set_current_line(newline)
-  -- Move cursor to the start of the new link
   vim.api.nvim_win_set_cursor(0, {row, s - 1})
 
   vim.notify("Replaced path with link: " .. link, vim.log.levels.INFO)
 end
 
-vim.keymap.set('n', '<leader>;l', create_link_from_path_under_cursor, { noremap = true, silent = true, desc = "Replace .txt path under cursor with [[PAGENAME]] link" })
+vim.keymap.set('n', '<leader>;l', create_link_from_path_under_cursor, {
+  noremap = true,
+  silent = true,
+  desc = "Replace .txt path under cursor with [[PAGENAME]] link or wrap string with [[ ]]"
+})
+
+
 
 
 
