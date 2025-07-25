@@ -483,7 +483,101 @@ local function create_link_from_path_under_cursor()
   local line = vim.api.nvim_get_current_line()
   local cursor_pos = col + 1 -- Lua strings are 1-based
 
-  -- Find a .txt relative path under the cursor (word chars, /, _, -, .txt)
+  -- Helper: split path into parts
+  local function split_path(p)
+    local t = {}
+    for part in string.gmatch(p, "[^/]+") do
+      table.insert(t, part)
+    end
+    return t
+  end
+
+  -- Helper: build and set link line (replaces entire line and moves cursor)
+  local function set_link_line(pagename)
+    -- replace '/' with ':', remove trailing .txt, wrap with [[ ]]
+    pagename = pagename:gsub("/", ":")
+    pagename = pagename:gsub("%.txt$", "")
+    local link = "[[" .. pagename .. "]]"
+    vim.api.nvim_set_current_line(link)
+    vim.api.nvim_win_set_cursor(0, {row, 1})  -- start of line
+    vim.notify("Replaced entire line with link: " .. link, vim.log.levels.INFO)
+  end
+
+  -- Helper: process .txt path string like behavior (1)
+  local function process_txt_path(path)
+    -- Make absolute
+    local abs_path = vim.fn.fnamemodify(path, ":p")
+    local abs_currfile = vim.fn.fnamemodify(currfile, ":p")
+
+    -- Get relative paths to cwd
+    local rel_path = vim.fn.fnamemodify(abs_path, ":.")
+    local rel_currfile = vim.fn.fnamemodify(abs_currfile, ":.")
+
+    local parts1 = split_path(rel_path)
+    local parts2 = split_path(rel_currfile)
+
+    -- Find common prefix length
+    local i = 1
+    while parts1[i] and parts2[i] and parts1[i] == parts2[i] do
+      i = i + 1
+    end
+
+    -- Extract unique suffix
+    local remaining = {}
+    for j = i, #parts1 do
+      table.insert(remaining, parts1[j])
+    end
+
+    if #remaining == 0 then
+      vim.notify("The two files are the same or no unique path found.", vim.log.levels.ERROR)
+      return false
+    end
+
+    local pagename
+    if #remaining >= 2 and remaining[1] == name_no_ext then
+      table.remove(remaining, 1)
+      pagename = "+" .. table.concat(remaining, "/")
+    else
+      pagename = table.concat(remaining, "/")
+    end
+
+    set_link_line(pagename)
+    return true
+  end
+
+  -- Helper: wrap string with [[+string]] like behavior (2)
+  local function wrap_string(str)
+    local wrapped = "[[+" .. str .. "]]"
+    vim.api.nvim_set_current_line(wrapped)
+    vim.api.nvim_win_set_cursor(0, {row, 1})
+    vim.notify("Wrapped string with link: " .. wrapped, vim.log.levels.INFO)
+  end
+
+  -- === 3rd behavior check: empty or whitespace-only line ===
+  if line:match("^%s*$") then
+    local reg_str = vim.fn.getreg('"')
+    if reg_str == nil or reg_str == "" or reg_str:match("^%s*$") then
+      vim.notify("No string found in unnamed register to create link", vim.log.levels.ERROR)
+      return
+    end
+
+    -- Check if register string ends with .txt (simple check)
+    if reg_str:match("%.txt$") then
+      local ok = process_txt_path(reg_str)
+      if not ok then
+        -- fallback if processing failed: wrap whole string
+        wrap_string(reg_str)
+      end
+      return
+    else
+      -- not a .txt path, wrap string
+      wrap_string(reg_str)
+      return
+    end
+  end
+
+  -- === Old behavior: find .txt path under cursor ===
+
   local pattern = "([%w%-%._/]+%.txt)"
   local s, e, path_under_cursor = string.find(line, pattern)
   local found = false
@@ -496,10 +590,10 @@ local function create_link_from_path_under_cursor()
   end
 
   if not found or not path_under_cursor then
-    -- No .txt path found; fallback: wrap contiguous non-whitespace string under cursor with [[ ]]
+    -- fallback: wrap contiguous non-whitespace string under cursor with [[+ ]]
     local start_pos, end_pos
 
-    -- Search backwards for start of string (stop at whitespace or start of line)
+    -- Search backward for start of string
     local i = cursor_pos
     while i > 0 do
       local c = line:sub(i, i)
@@ -508,7 +602,7 @@ local function create_link_from_path_under_cursor()
     end
     start_pos = i + 1
 
-    -- Search forwards for end of string (stop at whitespace or end of line)
+    -- Search forward for end of string
     i = cursor_pos
     local line_len = #line
     while i <= line_len do
@@ -533,71 +627,14 @@ local function create_link_from_path_under_cursor()
     return
   end
 
-  -- If found .txt path, build link as before
-
-  -- Make both paths absolute for comparison
-  local abs_under_cursor = vim.fn.fnamemodify(path_under_cursor, ":p")
-  local abs_currfile = vim.fn.fnamemodify(currfile, ":p")
-
-  -- Get relative paths to cwd
-  local rel_under_cursor = vim.fn.fnamemodify(abs_under_cursor, ":.")
-  local rel_currfile = vim.fn.fnamemodify(abs_currfile, ":.")
-
-  -- Split paths into components (by '/')
-  local function split_path(p)
-    local t = {}
-    for part in string.gmatch(p, "[^/]+") do
-      table.insert(t, part)
-    end
-    return t
-  end
-
-  local parts1 = split_path(rel_under_cursor)
-  local parts2 = split_path(rel_currfile)
-
-  -- Find common prefix length
-  local i = 1
-  while parts1[i] and parts2[i] and parts1[i] == parts2[i] do
-    i = i + 1
-  end
-
-  -- Extract unique suffix from path under cursor
-  local remaining = {}
-  for j = i, #parts1 do
-    table.insert(remaining, parts1[j])
-  end
-
-  if #remaining == 0 then
-    vim.notify("The two files are the same or no unique path found.", vim.log.levels.ERROR)
-    return
-  end
-
-  -- If remaining path starts with current file name, replace with +
-  local pagename
-  if #remaining >= 2 and remaining[1] == name_no_ext then
-    table.remove(remaining, 1)
-    pagename = "+" .. table.concat(remaining, "/")
-  else
-    pagename = table.concat(remaining, "/")
-  end
-
-  -- Format link: replace '/' with ':', remove trailing .txt, wrap with [[ ]]
-  pagename = pagename:gsub("/", ":")
-  pagename = pagename:gsub("%.txt$", "")
-  local link = "[[" .. pagename .. "]]"
-
-  -- Replace path under cursor with link string
-  local newline = line:sub(1, s - 1) .. link .. line:sub(e + 1)
-  vim.api.nvim_set_current_line(newline)
-  vim.api.nvim_win_set_cursor(0, {row, s - 1})
-
-  vim.notify("Replaced path with link: " .. link, vim.log.levels.INFO)
+  -- If found .txt path, replace entire line with [[PAGENAME]] link
+  process_txt_path(path_under_cursor)
 end
 
 vim.keymap.set('n', '<leader>;l', create_link_from_path_under_cursor, {
   noremap = true,
   silent = true,
-  desc = "Replace .txt path under cursor with [[PAGENAME]] link or wrap string with [[ ]]"
+  desc = "Replace .txt path under cursor with [[PAGENAME]] link or wrap string with [[ ]] or use content from register if line empty"
 })
 
 
@@ -774,4 +811,9 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set("v", "<leader>;g", capitalize_sentences_in_visual, { buffer = true, noremap = true, silent = true, desc = "Capitalize sentences in selection" })
   end,
 })
+
+
+
+-- Copy relative path of current file to system clipboard with <leader>;r
+vim.api.nvim_set_keymap('n', '<leader>;r', ':let @\" = expand("%:.")<CR>', { noremap = true, silent = true })
 
