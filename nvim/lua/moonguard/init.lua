@@ -817,3 +817,49 @@ vim.api.nvim_create_autocmd("FileType", {
 -- Copy relative path of current file to system clipboard with <leader>;r
 vim.api.nvim_set_keymap('n', '<leader>;r', ':let @\" = expand("%:.")<CR>', { noremap = true, silent = true })
 
+
+
+
+local function add_days(date_str, days)
+  local y, m, d = date_str:match("^(%d%d%d%d)%-(%d%d)%-(%d%d)$")
+  if not y then return nil end
+  local time = os.time{year=tonumber(y), month=tonumber(m), day=tonumber(d)}
+  local added = time + days * 24 * 60 * 60
+  return os.date("%Y-%m-%d", added)
+end
+
+vim.keymap.set('n', '<leader>;w', function()
+  vim.ui.input({ prompt = "Days to add/subtract (DATEADD): " }, function(input)
+    if not input then return end
+    local dateadd = tonumber(input)
+    if not dateadd then
+      vim.notify("Invalid DATEADD: not an integer.", vim.log.levels.ERROR)
+      return
+    end
+
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local line = vim.api.nvim_get_current_line()
+    local date_pat = "(%d%d%d%d%-%d%d%-%d%d)"
+    -- Find the first date and its byte indices (start_idx, end_idx)
+    local start_idx, end_idx = string.find(line, "%d%d%d%d%-%d%d%-%d%d")
+    local sourcedate
+
+    if start_idx and end_idx then
+      sourcedate = line:sub(start_idx, end_idx)
+    else
+      sourcedate = os.date("%Y-%m-%d")
+    end
+
+    local targetdate = add_days(sourcedate, dateadd)
+
+    if not start_idx then
+      -- Insert new string with TARGETDATE below cursor
+      vim.api.nvim_put({targetdate}, "c", true, true)
+    else
+      -- Replace the detected date with TARGETDATE
+      local newline = line:sub(1, start_idx - 1) .. targetdate .. line:sub(end_idx + 1)
+      vim.api.nvim_set_current_line(newline)
+    end
+  end)
+end, { desc = "Add/subtract days to date in line or insert date" })
+
