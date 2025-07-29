@@ -750,6 +750,8 @@ vim.keymap.set('n', '<leader>;o', open_file_page_or_url, { noremap = true, silen
 
 
 
+
+-- Capitalizes the first letter of sentences, and standalone i
 local function capitalize_sentences_in_line(line)
   line = line:lower()
   line = line:gsub("^%s*([a-z])", function(c) return c:upper() end)
@@ -765,38 +767,52 @@ local function capitalize_sentences_in_line(line)
   return line
 end
 
+-- Helper: get correct line range from visual selection in any direction
+local function get_visual_selection_range()
+  local start_pos = vim.fn.getpos('v')
+  local end_pos = vim.fn.getpos('.')
+  local start_row = start_pos[2] - 1
+  local end_row = end_pos[2] - 1
+  if start_row > end_row then start_row, end_row = end_row, start_row end
+  return start_row, end_row
+end
 
 local function capitalize_sentences_in_visual()
-  -- Get visual selection range
+  -- Ensure applicable mode
   local mode = vim.fn.mode()
   if mode ~= 'v' and mode ~= 'V' then
     vim.notify("No visual selection active.", vim.log.levels.INFO)
     return
   end
-  local bufnr = vim.api.nvim_get_current_buf()
-  local start_pos = vim.fn.getpos("'<")
-  local end_pos = vim.fn.getpos("'>")
-  local start_row = start_pos[2] - 1
-  local end_row = end_pos[2] - 1
 
-  -- Get and transform lines
+  -- Get true visual selection range
+  local start_row, end_row = get_visual_selection_range()
+
+  -- Check range validity
+  if start_row < 0 or end_row < 0 or start_row > end_row then
+    vim.notify("Invalid visual selection range.", vim.log.levels.ERROR)
+    return
+  end
+
+  local bufnr = vim.api.nvim_get_current_buf()
   local lines = vim.api.nvim_buf_get_lines(bufnr, start_row, end_row + 1, false)
   for i, line in ipairs(lines) do
     lines[i] = capitalize_sentences_in_line(line)
   end
   vim.api.nvim_buf_set_lines(bufnr, start_row, end_row + 1, false, lines)
   vim.notify("Capitalized sentences in selection.", vim.log.levels.INFO)
+  -- Exit visual mode (return to normal)
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", true)
 end
 
-
+-- Autocmd to map keys only in text buffers
 local TextCapGroup = vim.api.nvim_create_augroup("TextCapGroup", {})
 vim.api.nvim_create_autocmd("FileType", {
   group = TextCapGroup,
   pattern = "text",
   callback = function()
-    -- Normal mode: current line
+    -- Normal mode mapping: capitalize current line
     vim.keymap.set("n", "<leader>;g", function()
-      local row = vim.api.nvim_win_get_cursor(0)[1]
       local orig_line = vim.api.nvim_get_current_line()
       local new_line = capitalize_sentences_in_line(orig_line)
       if new_line ~= orig_line then
@@ -807,10 +823,18 @@ vim.api.nvim_create_autocmd("FileType", {
       end
     end, { buffer = true, noremap = true, silent = true, desc = "Capitalize sentences in line" })
 
-    -- Visual mode: selection
-    vim.keymap.set("v", "<leader>;g", capitalize_sentences_in_visual, { buffer = true, noremap = true, silent = true, desc = "Capitalize sentences in selection" })
+    -- Visual mode mapping: capitalize only the selection
+    vim.keymap.set("v", "<leader>;g", capitalize_sentences_in_visual,
+      { buffer = true, noremap = true, silent = true, desc = "Capitalize sentences in selection" })
   end,
 })
+
+
+
+
+
+
+
 
 
 
