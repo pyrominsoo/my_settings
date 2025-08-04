@@ -49,7 +49,7 @@ local function decorate_n_times(n)
 end
 
 for i = 1, 5 do
-  vim.keymap.set('n', '<leader>h'..i, function() decorate_n_times(i) end, { noremap = true, silent = true, desc = "Decorate line with "..i.." =" })
+  vim.keymap.set('n', '<leader>;'..i, function() decorate_n_times(i) end, { noremap = true, silent = true, desc = "Decorate line with "..i.." =" })
 end
 
 
