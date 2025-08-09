@@ -852,7 +852,7 @@ local function add_days(date_str, days)
   return os.date("%Y-%m-%d", added)
 end
 
-vim.keymap.set('n', '<leader>;w', function()
+vim.keymap.set('n', '<leader>;j', function()
   vim.ui.input({ prompt = "Days to add/subtract (DATEADD): " }, function(input)
     if not input then return end
     local dateadd = tonumber(input)
