@@ -981,3 +981,68 @@ end)
 
 
 
+-- Global flag and tables
+local lsp_enabled = true
+local attached_buffers_by_client = {}
+local client_configs = {}
+
+-- Store original buf_attach_client
+local original_buf_attach_client = vim.lsp.buf_attach_client
+
+local function add_buf(client_id, buf)
+  attached_buffers_by_client[client_id] = attached_buffers_by_client[client_id] or {}
+  if not vim.tbl_contains(attached_buffers_by_client[client_id], buf) then
+    table.insert(attached_buffers_by_client[client_id], buf)
+  end
+end
+
+vim.lsp.buf_attach_client = function(bufnr, client_id)
+  if not lsp_enabled then
+    local client = vim.lsp.get_client_by_id(client_id)
+    if client then
+      add_buf(client_id, bufnr)
+      vim.lsp.stop_client(client_id)
+    end
+    return false
+  end
+  return original_buf_attach_client(bufnr, client_id)
+end
+
+local function stop_all_clients()
+  for _, client in pairs(vim.lsp.buf_get_clients()) do
+    for buf, _ in pairs(client.attached_buffers or {}) do
+      add_buf(client.id, buf)
+      vim.lsp.buf_detach_client(buf, client.id)
+    end
+    vim.lsp.stop_client(client.id)
+  end
+end
+
+local function start_all_clients()
+  for client_id, bufs in pairs(attached_buffers_by_client) do
+    local cfg = client_configs[client_id]
+    if cfg then
+      local new_client_id = vim.lsp.start_client(cfg)
+      for _, buf in ipairs(bufs) do
+        original_buf_attach_client(buf, new_client_id)
+      end
+    end
+  end
+  attached_buffers_by_client = {}
+  client_configs = {}
+end
+
+function _G.toggle_lsp_session()
+  if lsp_enabled then
+    stop_all_clients()
+    lsp_enabled = false
+    print("LSP disabled for this session")
+  else
+    start_all_clients()
+    lsp_enabled = true
+    print("LSP enabled for this session")
+  end
+end
+
+vim.api.nvim_set_keymap('n', '<leader>tl', ':lua toggle_lsp_session()<CR>', { noremap = true, silent = true })
+
