@@ -73,39 +73,8 @@ vim.cmd([[set listchars=tab:>~,nbsp:_,trail:.]])
 -- disable autocomment
 vim.cmd([[autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o]])
 
-function SearchToday()
-    local base = os.date('%Y-%m-%d')
-    local str = [[grep! -g "*.txt" "\[ \] .*]] .. base .. [["]]
-    vim.cmd(str)
-    vim.cmd("cw")
-end
 
-function SearchTomo()
-    local timeshift = 24 * 60 * 60
-    local base = os.date('%Y-%m-%d', os.time() + timeshift)
-    local str = [[grep! -g "*.txt" "\[ \] .*]] .. base .. [["]]
-    vim.cmd(str)
-    vim.cmd("cw")
-end
 
-function SearchNodate()
-    local str = [[grep! -g "*.txt" "\[ \] .*"]]
-    vim.cmd(str)
-    vim.cmd("cw")
-end
-
-local TextTasks = vim.api.nvim_create_augroup("TextTasks", {})
-
-local autocmd = vim.api.nvim_create_autocmd
-autocmd({"BufEnter", "BufWinEnter"}, {
-    group = TextTasks,
-    pattern = "*.txt",
-    callback = function()
-        vim.keymap.set("n", "<leader>td", SearchToday)
-        vim.keymap.set("n", "<leader>tm", SearchTomo)
-        vim.keymap.set("n", "<leader>tn", SearchNodate)
-    end,
-})
 
 
 
