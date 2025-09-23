@@ -1015,3 +1015,32 @@ end
 
 vim.api.nvim_set_keymap('n', '<leader>tl', ':lua toggle_lsp_session()<CR>', { noremap = true, silent = true })
 
+
+
+vim.keymap.set('n', '<leader>;s', function()
+  local qflist = {}
+  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+  for i, line in ipairs(lines) do
+    local leading_eqs = line:match("^(=+)")
+    local trailing_eqs = line:match("(=+)$")
+    if leading_eqs and trailing_eqs and #leading_eqs >= 3 and #leading_eqs == #trailing_eqs then
+      local content = line:sub(#leading_eqs + 1, #line - #trailing_eqs)
+      -- content can include any characters, including whitespace
+      table.insert(qflist, {
+        filename = vim.api.nvim_buf_get_name(0),
+        lnum = i,
+        col = 1,
+        text = line,
+      })
+    end
+  end
+
+  if #qflist > 0 then
+    vim.fn.setqflist({}, ' ', { title = 'Matched Lines', items = qflist })
+    vim.cmd('copen')
+  else
+    print('No matching lines found')
+  end
+end, { desc = 'List lines matching === STRING === in quickfix' })
+
