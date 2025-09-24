@@ -75,6 +75,18 @@ vim.cmd([[autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatop
 
 
 
+vim.keymap.set('n', '<leader>tn', function()
+  if vim.fn.executable("rg") == 1 then
+    -- ^TONO at start of line, only in .txt files
+    local tono_cmd = "rg --vimgrep -g '*.txt' 'TONO'"
+    local results = vim.fn.systemlist(tono_cmd)
+    vim.fn.setqflist({}, ' ', { title = 'TONO at line start (.txt)', lines = results })
+    vim.cmd("copen")
+  else
+    vim.notify("ripgrep (rg) not found in PATH", vim.log.levels.ERROR)
+  end
+end, { desc = 'Grep TONO (start of line, .txt)' })
+
 
 
 
