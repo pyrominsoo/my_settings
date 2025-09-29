@@ -1029,30 +1029,26 @@ vim.api.nvim_set_keymap('n', '<leader>tl', ':lua toggle_lsp_session()<CR>', { no
 
 
 
+
 vim.keymap.set('n', '<leader>;s', function()
-  local qflist = {}
+  local toc_lines = {}
+  table.insert(toc_lines, "TOC")
   local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
   for i, line in ipairs(lines) do
     local leading_eqs = line:match("^(=+)")
     local trailing_eqs = line:match("(=+)$")
-    if leading_eqs and trailing_eqs and #leading_eqs >= 3 and #leading_eqs == #trailing_eqs then
+    if leading_eqs and trailing_eqs and #leading_eqs == #trailing_eqs then
       local content = line:sub(#leading_eqs + 1, #line - #trailing_eqs)
-      -- content can include any characters, including whitespace
-      table.insert(qflist, {
-        filename = vim.api.nvim_buf_get_name(0),
-        lnum = i,
-        col = 1,
-        text = line,
-      })
+      -- Trim leading/trailing whitespace from content
+      content = content:gsub("^%s*(.-)%s*$", "%1")
+      local tabs = string.rep("\t", 7 - #leading_eqs) -- 6 tabs for one '=', 0 for six '='
+      table.insert(toc_lines, tabs .. content)
     end
   end
 
-  if #qflist > 0 then
-    vim.fn.setqflist({}, ' ', { title = 'Matched Lines', items = qflist })
-    vim.cmd('copen')
-  else
-    print('No matching lines found')
-  end
-end, { desc = 'List lines matching === STRING === in quickfix' })
+  -- Insert the TOC at the current line
+  local row = vim.api.nvim_win_get_cursor(0)[1] - 1
+  vim.api.nvim_buf_set_lines(0, row, row, false, toc_lines)
+end, { desc = 'Insert table of contents for = headings at cursor' })
 
