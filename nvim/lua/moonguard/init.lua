@@ -1052,3 +1052,75 @@ vim.keymap.set('n', '<leader>;s', function()
   vim.api.nvim_buf_set_lines(0, row, row, false, toc_lines)
 end, { desc = 'Insert table of contents for = headings at cursor' })
 
+
+
+
+
+vim.api.nvim_create_user_command("SS", function(opts)
+  local dir = opts.args
+  local stat = vim.loop.fs_stat(dir)
+  if not stat or stat.type ~= "directory" then
+    error("Directory does not exist: " .. dir)
+  end
+
+  local handle = vim.loop.fs_scandir(dir)
+  if not handle then
+    error("Failed to scan directory: " .. dir)
+  end
+
+  local files = {}
+  while true do
+    local name, t = vim.loop.fs_scandir_next(handle)
+    if not name then break end
+    if t == "file" then
+      table.insert(files, name)
+    end
+  end
+
+  if #files == 0 then
+    error("No files found in directory: " .. dir)
+  end
+
+  local buf_path = vim.api.nvim_buf_get_name(0)
+  if buf_path == "" then
+    error("No file is open in current buffer.")
+  end
+
+  local buf_dir = vim.fn.fnamemodify(buf_path, ":p:h")
+  local base_name = vim.fn.fnamemodify(buf_path, ":t:r")
+  local dest_dir = buf_dir .. "/" .. base_name
+
+  -- Create destination directory if it doesn't exist
+  local dstat = vim.loop.fs_stat(dest_dir)
+  if not dstat then
+    local ok, err = vim.loop.fs_mkdir(dest_dir, 493) -- 0755 permissions
+    if not ok then
+      error("Failed to create directory " .. dest_dir .. ": " .. (err or "unknown error"))
+    end
+  elseif dstat.type ~= "directory" then
+    error(dest_dir .. " exists but is not a directory")
+  end
+
+  -- Move files and insert simplified references
+  for _, fname in ipairs(files) do
+    local src = dir .. "/" .. fname
+    local dst = dest_dir .. "/" .. fname
+    local ok, err = os.rename(src, dst)
+    if not ok then
+      error("Failed to move file " .. fname .. ": " .. (err or "unknown error"))
+    end
+
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    vim.api.nvim_buf_set_lines(0, row, row, false, {"[[./" .. fname .. "]]"})
+    vim.api.nvim_win_set_cursor(0, {row + 1, 0})
+  end
+end, {
+  nargs = 1,
+  complete = "dir",
+  desc = "Move top-level files into a subdirectory named after the current buffer file and insert simplified relative references"
+})
+
+vim.keymap.set("n", "<leader>;v", function()
+  vim.api.nvim_feedkeys(":SS ~/Dow", "n", false)
+end, {desc = "Pre-fill :SS ~/Dow in command line"})
+
