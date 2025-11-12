@@ -1,4 +1,12 @@
 #!/bin/bash
 
-cd `cat .dir_cache | fzf`;
-tmux new -A -s $(basename $PWD);
+target_dir=$(cat .dir_cache | fzf)
+if [ -n "$target_dir" ]; then
+  cd "$target_dir" || exit
+  # Use parameter expansion to get the basename safely
+  session_name=$(basename "$PWD")
+  tmux new -A -s "$session_name"
+else
+  echo "No directory selected."
+fi
+
