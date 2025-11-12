@@ -33,8 +33,15 @@ alias v="vi ."
 alias chrome="google-chrome"
 
 # bash | zsh
-alias sd="cd ~ && cd \$(cat .dir_cache | fzf)"
-alias vd="cd ~ && cd \$(cat .dir_cache | fzf) && nvim ."
+sd() {
+  local dir
+  dir=$(cat ~/.dir_cache | fzf)
+  if [ -n "$dir" ]; then
+    cd ~ && cd "$dir"
+  else
+    echo "No directory selected."
+  fi
+}
 alias td="cd ~ && source .td"
 alias t="cd ~ && source .td"
 
