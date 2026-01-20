@@ -867,6 +867,46 @@ vim.keymap.set('n', '<leader>;j', function()
   end)
 end, { desc = "Add/subtract days to date in line or insert date" })
 
+vim.keymap.set('v', '<leader>;j', function()
+  vim.ui.input({ prompt = "Days to add/subtract (DATEADD): " }, function(input)
+    if not input then return end
+    local dateadd = tonumber(input)
+    if not dateadd then
+      vim.notify("Invalid DATEADD: not an integer.", vim.log.levels.ERROR)
+      return
+    end
+
+    -- Get the range of the visual selection
+    local start_line = vim.fn.line("v")
+    local end_line = vim.fn.line(".")
+
+    -- Ensure start_line is the smaller number
+    if start_line > end_line then
+      start_line, end_line = end_line, start_line
+    end
+
+    -- Loop through each line in the selection
+    for i = start_line, end_line do
+      local line = vim.api.nvim_buf_get_lines(0, i - 1, i, false)[1]
+      local start_idx, end_idx = string.find(line, "%d%d%d%d%-%d%d%-%d%d")
+
+      if start_idx and end_idx then
+        local sourcedate = line:sub(start_idx, end_idx)
+        local targetdate = add_days(sourcedate, dateadd)
+        if targetdate then
+          local newline = line:sub(1, start_idx - 1) .. targetdate .. line:sub(end_idx + 1)
+          vim.api.nvim_buf_set_lines(0, i - 1, i, false, { newline })
+        end
+      end
+    end
+    
+    -- Return to Normal mode after execution
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), 'n', true)
+  end)
+end, { desc = "Add/subtract days to dates in visual selection" })
+
+
+
 
 
 
