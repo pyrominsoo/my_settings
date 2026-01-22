@@ -1124,3 +1124,182 @@ vim.keymap.set("n", "<leader>;v", function()
   vim.api.nvim_feedkeys(":SS ~/Dow", "n", false)
 end, {desc = "Pre-fill :SS ~/Dow in command line"})
 
+
+
+
+
+
+
+-- Copy the file referenced under the cursor ([[...]] or {{...}}) to a given target directory.
+-- Invocation: :CopyFileToDir <target_dir>
+-- Example:    :CopyFileToDir ~/Down
+
+local function CopyFileToDir(target_dir)
+  local uv = vim.loop
+
+  -- Validate and expand "~"
+  if not target_dir or target_dir == "" then
+    vim.notify("Target directory is required. Usage: :CopyFileToDir <target_dir>", vim.log.levels.ERROR)
+    return
+  end
+  local dest_root = vim.fn.expand(target_dir)
+
+  -- Cursor & current line context
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local line = vim.api.nvim_get_current_line()
+  local cursor_pos = col + 1 -- Lua strings are 1-based
+
+  -- Patterns like the reference function
+  local patterns = {
+    { pattern = "%[%[(.-)%]%]" }, -- [[FILENAME]]
+    { pattern = "%{%{(.-)%}%}" }, -- {{FILENAME}}
+  }
+
+  -- Ensure destination directory (mkdir -p)
+  local function ensure_dir(path)
+    local stat = uv.fs_stat(path)
+    if stat and stat.type == "directory" then
+      return true
+    end
+    -- Build progressively
+    local parts = {}
+    for part in string.gmatch(path, "[^/]+") do
+      table.insert(parts, part)
+    end
+    local prefix = path:sub(1, 1) == "/" and "/" or ""
+    local built = prefix
+    for _, p in ipairs(parts) do
+      built = (built == "/" and ("/" .. p)) or (built == "" and p) or (built .. "/" .. p)
+      local s = uv.fs_stat(built)
+      if not s then
+        local ok, err = uv.fs_mkdir(built, 493) -- 0755
+        if not ok then
+          return false, err
+        end
+      elseif s.type ~= "directory" then
+        return false, "Path component is not a directory: " .. built
+      end
+    end
+    return true
+  end
+
+  -- Utilities
+  local function path_basename(p)
+    return vim.fn.fnamemodify(p, ":t") -- filename.ext
+  end
+
+  local function split_name_ext(name)
+    local idx = name:match("^.*()%.")
+    if idx then
+      return name:sub(1, idx - 1), name:sub(idx)
+    else
+      return name, ""
+    end
+  end
+
+  local function make_unique(dest_dir, leaf_name)
+    local base, ext = split_name_ext(leaf_name)
+    local candidate = dest_dir .. "/" .. leaf_name
+    local n = 1
+    while uv.fs_stat(candidate) do
+      candidate = string.format("%s/%s(%d)%s", dest_dir, base, n, ext)
+      n = n + 1
+    end
+    return candidate
+  end
+
+  local function copy_file(src, dst)
+    if uv.fs_copyfile then
+      local ok, err = uv.fs_copyfile(src, dst, { excl = true })
+      if not ok then return false, err end
+      return true
+    end
+    local in_f = io.open(src, "rb")
+    if not in_f then return false, "Cannot open source: " .. src end
+    local out_f, err = io.open(dst, "wb")
+    if not out_f then
+      in_f:close()
+      return false, err or ("Cannot open destination: " .. dst)
+    end
+    local chunk = in_f:read(4096)
+    while chunk do
+      out_f:write(chunk)
+      chunk = in_f:read(4096)
+    end
+    in_f:close()
+    out_f:close()
+    return true
+  end
+
+  -- Find the pattern under the cursor and act
+  for _, pat in ipairs(patterns) do
+    local search_start = 1
+    while true do
+      local s, e, fname = string.find(line, pat.pattern, search_start)
+      if not s then break end
+
+      if cursor_pos >= s and cursor_pos <= e then
+        -- Current buffer context (matches reference behavior)
+        local currfile = vim.api.nvim_buf_get_name(0)
+        local currdir = vim.fn.fnamemodify(currfile, ":h")
+        local name_no_ext = vim.fn.fnamemodify(currfile, ":t:r")
+
+        -- Expand "./" or ".\"
+        local expanded = fname
+        if fname:sub(1, 2) == "./" or fname:sub(1, 2) == ".\\" then
+          expanded = currdir .. "/" .. name_no_ext .. "/" .. fname:sub(3)
+        end
+
+        -- Normalize path separators
+        expanded = expanded:gsub("\\", "/")
+
+        -- Check source exists
+        local sstat = uv.fs_stat(expanded)
+        if not sstat or sstat.type ~= "file" then
+          vim.notify("Source not found or not a regular file: " .. expanded, vim.log.levels.ERROR)
+          return
+        end
+
+        -- Ensure destination directory
+        local ok, err = ensure_dir(dest_root)
+        if not ok then
+          vim.notify("Failed to ensure destination dir: " .. (err or dest_root), vim.log.levels.ERROR)
+          return
+        end
+
+        -- Compute destination path (unique)
+        local leaf = path_basename(expanded)
+        local dest = make_unique(dest_root, leaf)
+
+        -- Copy
+        local ok2, err2 = copy_file(expanded, dest)
+        if ok2 then
+          vim.notify("Copied to: " .. dest, vim.log.levels.INFO)
+        else
+          vim.notify("Failed to copy: " .. (err2 or expanded), vim.log.levels.ERROR)
+        end
+
+        return
+      end
+
+      search_start = e + 1
+    end
+  end
+
+  vim.notify("No [[FILENAME]] or {{FILENAME}} under cursor", vim.log.levels.ERROR)
+end
+
+-- Register the user command: :CopyFileToDir <target_dir>
+vim.api.nvim_create_user_command(
+  "CopyFileToDir",
+  function(opts)
+    CopyFileToDir(opts.args)
+  end,
+  {
+    nargs = 1,           -- require exactly one argument (the target directory)
+    complete = "file",   -- path-like completion in the command-line
+    desc = "Copy the file referenced under cursor ([[...]] or {{...}}) to the given target directory",
+  }
+)
+
+vim.keymap.set('n', '<leader>;w', ':CopyFileToDir ~/Down', { noremap = true })
