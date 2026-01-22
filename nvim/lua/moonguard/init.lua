@@ -867,6 +867,46 @@ vim.keymap.set('n', '<leader>;j', function()
   end)
 end, { desc = "Add/subtract days to date in line or insert date" })
 
+vim.keymap.set('v', '<leader>;j', function()
+  vim.ui.input({ prompt = "Days to add/subtract (DATEADD): " }, function(input)
+    if not input then return end
+    local dateadd = tonumber(input)
+    if not dateadd then
+      vim.notify("Invalid DATEADD: not an integer.", vim.log.levels.ERROR)
+      return
+    end
+
+    -- Get the range of the visual selection
+    local start_line = vim.fn.line("v")
+    local end_line = vim.fn.line(".")
+
+    -- Ensure start_line is the smaller number
+    if start_line > end_line then
+      start_line, end_line = end_line, start_line
+    end
+
+    -- Loop through each line in the selection
+    for i = start_line, end_line do
+      local line = vim.api.nvim_buf_get_lines(0, i - 1, i, false)[1]
+      local start_idx, end_idx = string.find(line, "%d%d%d%d%-%d%d%-%d%d")
+
+      if start_idx and end_idx then
+        local sourcedate = line:sub(start_idx, end_idx)
+        local targetdate = add_days(sourcedate, dateadd)
+        if targetdate then
+          local newline = line:sub(1, start_idx - 1) .. targetdate .. line:sub(end_idx + 1)
+          vim.api.nvim_buf_set_lines(0, i - 1, i, false, { newline })
+        end
+      end
+    end
+    
+    -- Return to Normal mode after execution
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), 'n', true)
+  end)
+end, { desc = "Add/subtract days to dates in visual selection" })
+
+
+
 
 
 
@@ -1303,3 +1343,118 @@ vim.api.nvim_create_user_command(
 )
 
 vim.keymap.set('n', '<leader>;w', ':CopyFileToDir ~/Down', { noremap = true })
+
+
+
+
+
+
+local function Gcal(arg)
+    local target_dates = {}
+
+    -- 1. Determine target dates
+    if arg and arg ~= "" then
+        table.insert(target_dates, arg)
+    else
+        local today = os.date("%Y-%m-%d")
+        local tomorrow = os.date("%Y-%m-%d", os.time() + 24 * 60 * 60)
+        table.insert(target_dates, today)
+        table.insert(target_dates, tomorrow)
+    end
+
+    -- 2. Construct Regex for rg/grep
+    local date_pattern = table.concat(target_dates, "|")
+    local rg_pattern = [[\[ \].*<]] .. "(" .. date_pattern .. ")"
+    
+    local grep_cmd
+    if vim.fn.executable("rg") == 1 then
+        grep_cmd = "rg --type-add 'txt:*.txt' --type txt -n -e '" .. rg_pattern .. "' --no-heading"
+    else
+        grep_cmd = "grep -r -n -E '" .. [[\[ \].*<]] .. "(" .. date_pattern .. ")" .. "' --include='*.txt' ."
+    end
+
+    -- 3. Run Grep
+    local handle = io.popen(grep_cmd)
+    if not handle then return end
+    local result = handle:read("*a")
+    handle:close()
+
+    -- 4. Group tasks by date
+    local tasks_by_date = {}
+    for _, d in ipairs(target_dates) do tasks_by_date[d] = {} end
+
+    for line in result:gmatch("[^\r\n]+") do
+        local text = line:match("^[^:]+:%d+:(.*)$")
+        if text then
+            local task = text:match("%[ %]%s*(.-)%s*<")
+            local date = text:match("<(%d%d%d%d%-%d%d%-%d%d)")
+            if task and date and tasks_by_date[date] then
+                table.insert(tasks_by_date[date], task)
+            end
+        end
+    end
+
+    -- 5. Helper to parse time from task string (format "TIME am/pm:")
+    local function parse_task_time(task_str)
+        local h, m, p = task_str:match("^(%d+):?(%d*)%s*([ap]m):")
+        if not h then return nil end
+        
+        local hour = tonumber(h)
+        local min = tonumber(m) or 0
+        local period = p:lower()
+
+        if period == "pm" and hour < 12 then hour = hour + 12 end
+        if period == "am" and hour == 12 then hour = 0 end
+        
+        return string.format("%02d:%02d", hour, min)
+    end
+
+    -- 6. Iterate through each date and reset the clock
+    local sorted_dates = {}
+    for d in pairs(tasks_by_date) do table.insert(sorted_dates, d) end
+    table.sort(sorted_dates)
+
+    for _, date in ipairs(sorted_dates) do
+        local current_hour = 9
+        local current_min = 0
+        local tasks = tasks_by_date[date]
+
+        for _, task_name in ipairs(tasks) do
+            local specified_time = parse_task_time(task_name)
+            local time_to_use
+
+            if specified_time then
+                time_to_use = specified_time
+            else
+                time_to_use = string.format("%02d:%02d", current_hour, current_min)
+                -- Only increment the default 09:00 clock for untimed tasks
+                current_min = current_min + 30
+                if current_min >= 60 then
+                    current_min = 0
+                    current_hour = current_hour + 1
+                end
+            end
+            
+            local cmd = string.format(
+                'gcalcli --calendar "pyrominsoo@gmail.com" add --title "%s" --when "%s %s" --duration 30 --description "" --where "" --remind 10',
+                task_name:gsub('"', '\\"'),
+                date,
+                time_to_use
+            )
+
+            vim.notify(string.format("Adding: [%s] %s at %s", date, task_name, time_to_use))
+            
+            local out = vim.fn.system(cmd)
+            if vim.v.shell_error ~= 0 then
+                vim.notify("Gcal Error: " .. out, vim.log.levels.ERROR)
+            end
+        end
+    end
+    
+    vim.notify("Gcal sync complete.", vim.log.levels.INFO)
+end
+
+-- Create the User Command
+vim.api.nvim_create_user_command('Gcal', function(opts)
+    Gcal(opts.args)
+end, { nargs = '?' })
