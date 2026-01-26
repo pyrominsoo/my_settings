@@ -1458,3 +1458,64 @@ end
 vim.api.nvim_create_user_command('Gcal', function(opts)
     Gcal(opts.args)
 end, { nargs = '?' })
+
+
+
+
+local function GcalCurrentLine()
+    -- 1. Grab the specific line under the cursor
+    local line = vim.api.nvim_get_current_line()
+    
+    -- 2. Extract Task and Date
+    -- task_name: matches everything between '[ ]' and the '<'
+    -- date: matches the YYYY-MM-DD immediately following the '<'
+    local task_name = line:match("%[ %]%s*(.-)%s*<")
+    local date = line:match("<(%d%d%d%d%-%d%d%-%d%d)")
+
+    if not task_name or not date then
+        vim.notify("GcalLine: Could not find '[ ]' or '<YYYY-MM-DD' on this line.", vim.log.levels.WARN)
+        return
+    end
+
+    -- 3. Internal helper to parse time (e.g., "10:30 am:")
+    local function parse_task_time(task_str)
+        local h, m, p = task_str:match("^(%d+):?(%d*)%s*([ap]m):")
+        if not h then return nil end
+        
+        local hour = tonumber(h)
+        local min = tonumber(m) or 0
+        local period = p:lower()
+
+        if period == "pm" and hour < 12 then hour = hour + 12 end
+        if period == "am" and hour == 12 then hour = 0 end
+        
+        return string.format("%02d:%02d", hour, min)
+    end
+
+    -- 4. Determine time (Parsed time or default 09:00)
+    local specified_time = parse_task_time(task_name)
+    local time_to_use = specified_time or "09:00"
+
+    -- 5. Construct and run the gcalcli command
+    local cmd = string.format(
+        'gcalcli --calendar "pyrominsoo@gmail.com" add --title "%s" --when "%s %s" --duration 30 --description "" --where "" --remind 10',
+        task_name:gsub('"', '\\"'),
+        date,
+        time_to_use
+    )
+
+    vim.notify(string.format("Syncing: %s at %s", task_name, time_to_use))
+    
+    local out = vim.fn.system(cmd)
+    if vim.v.shell_error ~= 0 then
+        -- Clean up error message for the notify window
+        vim.notify("Gcal Error: " .. out:gsub("\n", " "), vim.log.levels.ERROR)
+    else
+        vim.notify("Successfully added to Calendar.", vim.log.levels.INFO)
+    end
+end
+
+-- Unique User Command
+vim.api.nvim_create_user_command('GcalLine', GcalCurrentLine, {})
+
+vim.keymap.set('n', '<leader>;c', ':GcalLine<CR>', { desc = 'Sync current line to Google Calendar' })

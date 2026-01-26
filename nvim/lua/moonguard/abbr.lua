@@ -199,5 +199,4 @@ end, {
 
 vim.keymap.set('n', '<leader>;a', ':Attach ~/Down', { noremap = true })
 vim.keymap.set('n', '<leader>;b', ':Bttach ~/Down', { noremap = true })
-vim.keymap.set('n', '<leader>;c', ':Cttach ~/Down', { noremap = true })
 
