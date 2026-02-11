@@ -1,3 +1,9 @@
+require('telescope').setup{
+  defaults = {
+    file_ignore_patterns = { "%.pdf" }
+  }
+}
+
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ts', '<cmd>Telescope<CR>', {})
 vim.keymap.set('n', '<leader>pf', builtin.find_files, {})
