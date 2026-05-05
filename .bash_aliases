@@ -57,3 +57,5 @@ function ranger {
     fi
 }
 
+export GDK_BACKEND=x11
+alias zathura='env GDK_BACKEND=x11 zathura --mode fullscreen'
