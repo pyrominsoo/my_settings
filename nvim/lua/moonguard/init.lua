@@ -170,21 +170,57 @@ local function open_delimited_filename()
     while true do
       local s, e, fname = string.find(line, pat.pattern, search_start)
       if not s then break end
+
       if cursor_pos >= s and cursor_pos <= e then
-        -- Get the current file's directory and name (without extension)
+        -- Current file context
         local currfile = vim.api.nvim_buf_get_name(0)
         local currdir = vim.fn.fnamemodify(currfile, ":h")
         local name_no_ext = vim.fn.fnamemodify(currfile, ":t:r")
 
-        -- Expand FILENAME if it starts with ./ or .\
+        -- Expand ./ or .\
         local expanded = fname
-        if fname:sub(1,2) == "./" or fname:sub(1,2) == ".\\" then
+        if fname:sub(1, 2) == "./" or fname:sub(1, 2) == ".\\" then
           expanded = currdir .. "/" .. name_no_ext .. "/" .. fname:sub(3)
         end
 
+        -- Decide opener based on extension
+        local ext = expanded:lower():match("%.([^./\\]+)$")
+
+        -- feh-supported image extensions (common + safe)
+        local image_exts = {
+          jpg = true, jpeg = true, png = true, gif = true,
+          bmp = true, tif = true, tiff = true,
+          webp = true, heic = true, avif = true,
+        }
+
+        -- PDF → zathura (forked)
+        if ext == "pdf" then
+          if vim.fn.executable("zathura") == 1 then
+            vim.fn.jobstart(
+              { "zathura", "--mode", "fullscreen", "--fork", expanded },
+              { detach = true }
+            )
+          else
+            vim.notify("zathura not found", vim.log.levels.ERROR)
+          end
+          return
+        end
+
+        -- Images → feh with auto-zoom
+        if ext and image_exts[ext] then
+          if vim.fn.executable("feh") == 1 then
+            vim.fn.jobstart({ "feh", "-Z", expanded }, { detach = true })
+          else
+            vim.notify("feh not found", vim.log.levels.ERROR)
+          end
+          return
+        end
+
+        -- Everything else → Windows default (wslview / xdg-open)
         open_with_default(expanded)
         return
       end
+
       search_start = e + 1
     end
   end
@@ -195,7 +231,6 @@ end
 -- Commented out as its functionality was merged with <leader>;g
 -- -- Key mapping: <leader>;o in normal mode
 -- vim.keymap.set('n', '<leader>;o', open_delimited_filename, { noremap = true, silent = true, desc = "Open [[FILENAME]] or {{FILENAME}} under cursor" })
-
 
 
 
