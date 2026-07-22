@@ -29,7 +29,24 @@ autocmd('TextYankPost', {
 -- })
 
 -- for win32yank
+-- Keep this for BOTH WSL and Linux Mint:
 vim.opt.clipboard = "unnamedplus"
+
+-- Only apply the win32yank provider if running inside WSL:
+if vim.fn.has("wsl") == 1 then
+  vim.g.clipboard = {
+    name = "win32yank-wsl",
+    copy = {
+      ["+"] = "win32yank.exe -i --crlf",
+      ["*"] = "win32yank.exe -i --crlf",
+    },
+    paste = {
+      ["+"] = "win32yank.exe -o --lf",
+      ["*"] = "win32yank.exe -o --lf",
+    },
+    cache_enabled = 0,
+  }
+end
 
 autocmd('InsertLeave', {
     pattern = '*',
