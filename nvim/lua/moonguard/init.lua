@@ -28,6 +28,9 @@ autocmd('TextYankPost', {
 --     command = [[%s/\s\+$//e]],
 -- })
 
+-- for win32yank
+vim.opt.clipboard = "unnamedplus"
+
 autocmd('InsertLeave', {
     pattern = '*',
     callback = function()
