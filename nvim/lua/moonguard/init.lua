@@ -229,7 +229,7 @@ local function open_delimited_filename()
         -- Images → feh with auto-zoom
         if ext and image_exts[ext] then
           if vim.fn.executable("feh") == 1 then
-            vim.fn.jobstart({ "feh", "-Z", expanded }, { detach = true })
+            vim.fn.jobstart({ "feh", "-.Z", expanded }, { detach = true })
           else
             vim.notify("feh not found", vim.log.levels.ERROR)
           end
