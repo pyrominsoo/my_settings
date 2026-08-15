@@ -15,8 +15,8 @@ alias tl="tmux ls"
 alias ta="tmux attach"
 alias tat="tmux attach -t"
 
-alias fehz="feh -zsZF"
-alias fehf="feh -sZF"
+alias fehz="feh -rzZF"
+alias fehf="feh -rZF"
 
 
 alias youdl="yt-dlp"
